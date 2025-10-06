@@ -14,9 +14,9 @@
 
     #define __pax_cond_create__    pax_windows_cond_create
     #define __pax_cond_destroy__   pax_windows_cond_destroy
-    #define __pax_cond_wait__      pax_windows_cond_wait
-    #define __pax_cond_signal__    pax_windows_cond_signal
-    #define __pax_cond_broadcast__ pax_windows_cond_broadcast
+    #define __pax_cond_sleep__     pax_windows_cond_sleep
+    #define __pax_cond_wake__      pax_windows_cond_wake
+    #define __pax_cond_wake_all__  pax_windows_cond_wake_all
 
 #elif PAX_SYSTEM == PAX_SYSTEM_LINUX
 
@@ -29,9 +29,9 @@
 
     #define __pax_cond_create__    pax_linux_cond_create
     #define __pax_cond_destroy__   pax_linux_cond_destroy
-    #define __pax_cond_wait__      pax_linux_cond_wait
-    #define __pax_cond_signal__    pax_linux_cond_signal
-    #define __pax_cond_broadcast__ pax_linux_cond_broadcast
+    #define __pax_cond_sleep__     pax_linux_cond_sleep
+    #define __pax_cond_wake__      pax_linux_cond_wake
+    #define __pax_cond_wake_all__  pax_linux_cond_wake_all
 
 #else
 
@@ -76,21 +76,21 @@ pax_cond_destroy(Pax_Cond self)
 }
 
 void
-pax_cond_wait(Pax_Cond self, Pax_Lock lock)
+pax_cond_sleep(Pax_Cond self, Pax_Lock lock)
 {
-    __pax_cond_wait__(self, lock);
+    __pax_cond_sleep__(self, lock);
 }
 
 void
-pax_cond_signal(Pax_Cond self)
+pax_cond_wake(Pax_Cond self)
 {
-    __pax_cond_signal__(self);
+    __pax_cond_wake__(self);
 }
 
 void
-pax_cond_broadcast(Pax_Cond self)
+pax_cond_wake_all(Pax_Cond self)
 {
-    __pax_cond_broadcast__(self);
+    __pax_cond_wake_all__(self);
 }
 
 #endif // PAX_CORE_PROCESS_SYNCHRO_C

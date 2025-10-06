@@ -35,13 +35,15 @@ pax_channel_try_insert_pure(Pax_Channel* self, void* memory, paxiword stride)
 
     pax_lock_enter(self->lock);
 
-    if (pax_array_ring_is_full(&self->items) == 0)
-        state = pax_array_ring_insert_tail_pure(&self->items, memory, 1, stride);
+    if (pax_array_ring_is_full(&self->items) == 0) {
+        state = pax_array_ring_insert_tail_pure(
+            &self->items, memory, 1, stride);
+    }
 
     pax_lock_leave(self->lock);
 
     if (state != 0)
-        pax_cond_signal(self->cond_empty);
+        pax_cond_wake(self->cond_empty);
 
     return state;
 }
@@ -54,14 +56,15 @@ pax_channel_insert_pure(Pax_Channel* self, void* memory, paxiword stride)
     pax_lock_enter(self->lock);
 
     while (pax_array_ring_is_full(&self->items) != 0)
-        pax_cond_wait(self->cond_full, self->lock);
+        pax_cond_sleep(self->cond_full, self->lock);
 
-    state = pax_array_ring_insert_tail_pure(&self->items, memory, 1, stride);
+    state = pax_array_ring_insert_tail_pure(
+        &self->items, memory, 1, stride);
 
     pax_lock_leave(self->lock);
 
     if (state != 0)
-        pax_cond_signal(self->cond_empty);
+        pax_cond_wake(self->cond_empty);
 
     return state;
 }
@@ -73,13 +76,15 @@ pax_channel_try_remove_pure(Pax_Channel* self, void* memory, paxiword stride)
 
     pax_lock_enter(self->lock);
 
-    if (pax_array_ring_is_empty(&self->items) == 0)
-        state = pax_array_ring_remove_head_pure(&self->items, memory, 1, stride);
+    if (pax_array_ring_is_empty(&self->items) == 0) {
+        state = pax_array_ring_remove_head_pure(
+            &self->items, memory, 1, stride);
+    }
 
     pax_lock_leave(self->lock);
 
     if (state != 0)
-        pax_cond_signal(self->cond_full);
+        pax_cond_wake(self->cond_full);
 
     return state;
 }
@@ -92,14 +97,15 @@ pax_channel_remove_pure(Pax_Channel* self, void* memory, paxiword stride)
     pax_lock_enter(self->lock);
 
     while (pax_array_ring_is_empty(&self->items) != 0)
-        pax_cond_wait(self->cond_empty, self->lock);
+        pax_cond_sleep(self->cond_empty, self->lock);
 
-    state = pax_array_ring_remove_head_pure(&self->items, memory, 1, stride);
+    state = pax_array_ring_remove_head_pure(
+        &self->items, memory, 1, stride);
 
     pax_lock_leave(self->lock);
 
     if (state != 0)
-        pax_cond_signal(self->cond_full);
+        pax_cond_wake(self->cond_full);
 
     return state;
 }

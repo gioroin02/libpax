@@ -13,7 +13,7 @@ struct Pax_Linux_Lock
 struct Pax_Linux_Cond
 {
     pthread_cond_t handle;
-}
+};
 
 Pax_Linux_Lock*
 pax_linux_lock_create(Pax_Arena* arena)
@@ -88,19 +88,19 @@ pax_linux_cond_destroy(Pax_Linux_Cond* self)
 }
 
 void
-pax_linux_cond_wait(Pax_Linux_Cond* self, Pax_Linux_Lock* lock)
+pax_linux_cond_sleep(Pax_Linux_Cond* self, Pax_Linux_Lock* lock)
 {
     pthread_cond_wait(&self->handle, &lock->handle);
 }
 
 void
-pax_linux_cond_signal(Pax_Linux_Cond* self)
+pax_linux_cond_wake(Pax_Linux_Cond* self)
 {
     pthread_cond_signal(&self->handle);
 }
 
 void
-pax_linux_cond_broadcast(Pax_Linux_Cond* self)
+pax_linux_cond_wake_all(Pax_Linux_Cond* self)
 {
     pthread_cond_broadcast(&self->handle);
 }

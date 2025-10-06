@@ -69,19 +69,19 @@ pax_windows_cond_destroy(Pax_Windows_Cond* self)
 }
 
 void
-pax_windows_cond_wait(Pax_Windows_Cond* self, Pax_Windows_Lock* lock)
+pax_windows_cond_sleep(Pax_Windows_Cond* self, Pax_Windows_Lock* lock)
 {
     SleepConditionVariableCS(&self->handle, &lock->handle, INFINITE);
 }
 
 void
-pax_windows_cond_signal(Pax_Windows_Cond* self)
+pax_windows_cond_wake(Pax_Windows_Cond* self)
 {
     WakeConditionVariable(&self->handle);
 }
 
 void
-pax_windows_cond_broadcast(Pax_Windows_Cond* self)
+pax_windows_cond_wake_all(Pax_Windows_Cond* self)
 {
     WakeAllConditionVariable(&self->handle);
 }

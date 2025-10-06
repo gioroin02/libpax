@@ -24,7 +24,8 @@ pax_linux_thread_start(Pax_Arena* arena, void* ctxt, void* proc)
         Pax_Linux_Thread_Proc routine =
             pax_as(Pax_Linux_Thread_Proc, proc);
 
-        int state = pthread_start(&result->handle, 0, routine, ctxt);
+        int state = pthread_start(&result->handle,
+            0, routine, ctxt);
 
         if (state == 0) return result;
     }

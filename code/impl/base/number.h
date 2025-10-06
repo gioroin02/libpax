@@ -193,7 +193,7 @@ pax_mag_f64(paxf64 value);
 paxfword
 pax_mag_floating(paxfword value);
 
-/* Unsigned sgnection */
+/* Unsigned sign */
 
 paxi8
 pax_sgn_u8(paxu8 value);
@@ -210,7 +210,7 @@ pax_sgn_u64(paxu64 value);
 paxi8
 pax_sgn_unsigned(paxuword value);
 
-/* Integer sgnection */
+/* Integer sign */
 
 paxi8
 pax_sgn_i8(paxi8 value);
@@ -227,7 +227,7 @@ pax_sgn_i64(paxi64 value);
 paxi8
 pax_sgn_integer(paxiword value);
 
-/* Floating sgnection */
+/* Floating sign */
 
 paxi8
 pax_sgn_f32(paxf32 value);

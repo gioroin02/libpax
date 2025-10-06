@@ -29,12 +29,12 @@ void
 pax_cond_destroy(Pax_Cond self);
 
 void
-pax_cond_wait(Pax_Cond self, Pax_Lock lock);
+pax_cond_sleep(Pax_Cond self, Pax_Lock lock);
 
 void
-pax_cond_signal(Pax_Cond self);
+pax_cond_wake(Pax_Cond self);
 
 void
-pax_cond_broadcast(Pax_Cond self);
+pax_cond_wake_all(Pax_Cond self);
 
 #endif // PAX_CORE_PROCESS_SYNCHRO_H
