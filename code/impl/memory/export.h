@@ -4,7 +4,6 @@
 #include "./define.h"
 
 #include "./slice.h"
-
 #include "./arena.h"
 
 #include "./array.h"

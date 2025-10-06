@@ -67,8 +67,10 @@ pax_arena_reserve_memory(Pax_Arena* self, paxiword length, paxiword stride)
     if (index < 0 || index + size > self->capacity)
         return 0;
 
-    Pax_Slice slice = pax_slice_make_amount(
-        self->memory, self->length, index + size, 1);
+    Pax_Slice slice =
+        pax_slice_make(self->memory, self->capacity, 1);
+
+    slice = pax_slice_range(slice, self->length, index + size);
 
     pax_slice_zero(slice);
 
@@ -80,12 +82,12 @@ pax_arena_reserve_memory(Pax_Arena* self, paxiword length, paxiword stride)
 Pax_Slice
 pax_arena_clone_slice(Pax_Arena* self, void* memory, paxiword length, paxiword stride)
 {
-    Pax_Slice value = pax_slice_make(memory, 0, length, stride);
+    Pax_Slice slice = pax_slice_make(memory, length, stride);
 
     Pax_Slice result =
-        pax_arena_reserve_slice(self, value.length, value.stride);
+        pax_arena_reserve_slice(self, slice.length, slice.stride);
 
-    pax_slice_copy(result, value);
+    pax_slice_copy(result, slice);
 
     return result;
 }

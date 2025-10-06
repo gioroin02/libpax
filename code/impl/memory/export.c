@@ -2,7 +2,6 @@
 #define PAX_CORE_MEMORY_EXPORT_C
 
 #include "./slice.c"
-
 #include "./arena.c"
 
 #include "./array.c"

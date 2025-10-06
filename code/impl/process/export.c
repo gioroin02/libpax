@@ -5,6 +5,7 @@
 #include "channel.c"
 
 #include "thread.c"
+#include "thread_pool.c"
 
 #include "system.c"
 

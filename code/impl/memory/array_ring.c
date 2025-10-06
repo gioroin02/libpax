@@ -4,6 +4,23 @@
 #include "array_ring.h"
 
 Pax_Array_Ring
+pax_array_ring_make_pure(void* memory, paxiword length, paxiword stride, paxiword offset)
+{
+    Pax_Array_Ring result = {0};
+
+    offset = pax_between(offset, 0, length);
+
+    if (memory != 0 && length > 0 && stride > 0) {
+        result.memory   = memory;
+        result.stride   = stride;
+        result.capacity = length;
+        result.offset   = offset;
+    }
+
+    return result;
+}
+
+Pax_Array_Ring
 pax_array_ring_create_pure(Pax_Arena* arena, paxiword length, paxiword stride)
 {
     Pax_Array_Ring result = {0};
@@ -26,11 +43,14 @@ pax_array_ring_copy(Pax_Arena* arena, Pax_Array_Ring* value)
 
     if (result.capacity == 0) return result;
 
-    for (paxiword i = 0; i < value->length; i += 1) {
-        paxiword j = (value->head + i) % value->capacity;
+    Pax_Slice slice = pax_slice_make(result.memory, result.capacity, result.stride);
+    Pax_Slice other = pax_slice_make(value->memory, value->capacity, result.stride);
 
-        Pax_Slice left  = pax_slice_make(result.memory, i, i + 1, result.stride);
-        Pax_Slice right = pax_slice_make(value->memory, j, j + 1, result.stride);
+    for (paxiword i = 0; i < value->length; i += 1) {
+        paxiword j = (value->offset + i) % value->capacity;
+
+        Pax_Slice left  = pax_slice_range_length(slice, i, 1);
+        Pax_Slice right = pax_slice_range_length(other, j, 1);
 
         pax_slice_copy(left, right);
     }
@@ -42,27 +62,29 @@ void
 pax_array_ring_clear(Pax_Array_Ring* self)
 {
     self->length = 0;
-    self->head   = 0;
-    self->tail   = 0;
+    self->offset = 0;
 }
 
 void
 pax_array_ring_normalize(Pax_Array_Ring* self)
 {
     Pax_Slice slice =
-        pax_slice_make(self->memory, 0, self->capacity, self->stride);
+        pax_slice_make(self->memory, self->capacity, self->stride);
 
-    if (self->head > self->tail) {
-        paxiword start = 0;
-        paxiword stop  = self->capacity - self->head;
+    paxiword head = self->offset;
+    paxiword tail = (self->offset + self->length) % self->capacity;
 
-        Pax_Slice left =
-            pax_slice_make(self->memory, self->head, stop, self->stride);
+    paxiword start = 0;
+    paxiword stop  = self->capacity;
 
-        Pax_Slice right =
-            pax_slice_make(self->memory, start, self->tail, self->stride);
+    if (head > tail) {
+        Pax_Slice left = pax_slice_range(slice, head, stop);
 
         pax_slice_flip(left);
+
+        Pax_Slice right =
+            pax_slice_range(slice, start, tail);
+
         pax_slice_flip(right);
 
         pax_slice_flip(slice);
@@ -72,19 +94,21 @@ pax_array_ring_normalize(Pax_Array_Ring* self)
 void
 pax_array_ring_fill(Pax_Array_Ring* self)
 {
-    paxiword diff = self->capacity - self->length;
+    Pax_Slice slice = pax_slice_make(self->memory,
+        self->capacity, self->stride);
 
-    for (paxiword i = 0; i < diff; i += 1) {
-        paxiword index = self->tail;
+    paxiword size = self->capacity - self->length;
 
-        Pax_Slice left = pax_slice_make(self->memory,
-            index, index + 1, self->stride);
+    for (paxiword i = self->length; i < self->capacity; i += 1) {
+        paxiword j = (self->offset + i) % self->capacity;
 
-        pax_slice_zero(left);
+        Pax_Slice range =
+            pax_slice_range_length(slice, j, 1);
 
-        self->length += 1;
-        self->tail    = (self->tail + 1) % self->capacity;
+        pax_slice_zero(range);
     }
+
+    self->length += size;
 }
 
 paxiword
@@ -123,147 +147,190 @@ pax_array_ring_is_full(Pax_Array_Ring* self)
     return self->length >= self->capacity ? 1 : 0;
 }
 
-paxb8
-pax_array_ring_insert_pure_head(Pax_Array_Ring* self, void* memory, paxiword stride)
+paxiword
+pax_array_ring_insert_head_pure(Pax_Array_Ring* self, void* memory, paxiword length, paxiword stride)
 {
-    if (self->length < 0 || self->length >= self->capacity)
-        return 0;
+    paxiword capacity = self->capacity - self->length;
+
+    length = pax_between(length, 0, capacity);
 
     if (self->stride != stride) return 0;
 
     Pax_Slice slice =
-        pax_slice_make(self->memory, 0, self->capacity, stride);
+        pax_slice_make(self->memory, self->capacity, stride);
 
-    Pax_Slice value = pax_slice_make(memory, 0, 1, stride);
+    Pax_Slice other = pax_slice_make(memory, length, stride);
+    paxiword  index = 0;
 
-    paxiword index = self->head + self->capacity - 1;
-    paxiword prev  = index;
+    self->offset = (self->offset + self->capacity - length) % self->capacity;
 
-    pax_slice_write(slice, prev % self->capacity, value);
+    for (paxiword i = 0; i < length; i += 1) {
+        paxiword j = (self->offset + index + i) % self->capacity;
 
-    self->length += 1;
-    self->head    = prev % self->capacity;
+        Pax_Slice left  = pax_slice_range_length(slice, j, 1);
+        Pax_Slice right = pax_slice_range_length(other, i, 1);
 
-    return 1;
+        pax_slice_copy(left, right);
+    }
+
+    self->length += length;
+
+    return length;
 }
 
-paxb8
-pax_array_ring_insert_pure_tail(Pax_Array_Ring* self, void* memory, paxiword stride)
+paxiword
+pax_array_ring_insert_tail_pure(Pax_Array_Ring* self, void* memory, paxiword length, paxiword stride)
 {
-    if (self->length < 0 || self->length >= self->capacity)
-        return 0;
+    paxiword capacity = self->capacity - self->length;
+
+    length = pax_between(length, 0, capacity);
 
     if (self->stride != stride) return 0;
 
     Pax_Slice slice =
-        pax_slice_make(self->memory, 0, self->capacity, stride);
+        pax_slice_make(self->memory, self->capacity, stride);
 
-    Pax_Slice value = pax_slice_make(memory, 0, 1, stride);
+    Pax_Slice other = pax_slice_make(memory, length, stride);
+    paxiword  index = self->length;
 
-    paxiword index = self->tail;
-    paxiword next  = index + 1;
+    for (paxiword i = 0; i < length; i += 1) {
+        paxiword j = (self->offset + index + i) % self->capacity;
 
-    pax_slice_write(slice, index % self->capacity, value);
+        Pax_Slice left  = pax_slice_range_length(slice, j, 1);
+        Pax_Slice right = pax_slice_range_length(other, i, 1);
 
-    self->length += 1;
-    self->tail    = next % self->capacity;
+        pax_slice_copy(left, right);
+    }
 
-    return 1;
+    self->length += length;
+
+    return length;
 }
 
-paxb8
-pax_array_ring_remove_pure_head(Pax_Array_Ring* self, void* memory, paxiword stride)
+paxiword
+pax_array_ring_remove_head_pure(Pax_Array_Ring* self, void* memory, paxiword length, paxiword stride)
 {
-    if (self->length <= 0 || self->length > self->capacity)
-        return 0;
+    paxiword elements = self->length;
+
+    length = pax_between(length, 0, elements);
 
     if (self->stride != stride) return 0;
 
     Pax_Slice slice =
-        pax_slice_make(self->memory, 0, self->capacity, stride);
+        pax_slice_make(self->memory, self->capacity, stride);
 
-    Pax_Slice value = pax_slice_make(memory, 0, 1, stride);
+    Pax_Slice other = pax_slice_make(memory, length, stride);
+    paxiword  index = 0;
 
-    paxiword index = self->head;
-    paxiword next  = index + 1;
+    for (paxiword i = 0; i < length; i += 1) {
+        paxiword j = (self->offset + index + i) % self->capacity;
 
-    pax_slice_read(slice, index % self->capacity, value);
+        Pax_Slice left  = pax_slice_range_length(slice, j, 1);
+        Pax_Slice right = pax_slice_range_length(other, i, 1);
 
-    self->length -= 1;
-    self->head    = next % self->capacity;
+        pax_slice_copy(right, left);
+    }
 
-    return 1;
+    self->length -= length;
+    self->offset  = (self->offset + length) % self->capacity;
+
+    return length;
 }
 
-paxb8
-pax_array_ring_remove_pure_tail(Pax_Array_Ring* self, void* memory, paxiword stride)
+paxiword
+pax_array_ring_remove_tail_pure(Pax_Array_Ring* self, void* memory, paxiword length, paxiword stride)
 {
-    if (self->length <= 0 || self->length > self->capacity)
-        return 0;
+    paxiword elements = self->length;
+
+    length = pax_between(length, 0, elements);
 
     if (self->stride != stride) return 0;
 
     Pax_Slice slice =
-        pax_slice_make(self->memory, 0, self->capacity, stride);
+        pax_slice_make(self->memory, self->capacity, stride);
 
-    Pax_Slice value = pax_slice_make(memory, 0, 1, stride);
+    Pax_Slice other = pax_slice_make(memory, length, stride);
+    paxiword  index = self->length - length;
 
-    paxiword index = self->tail + self->capacity - 1;
-    paxiword prev  = index;
+    for (paxiword i = 0; i < length; i += 1) {
+        paxiword j = (self->offset + index + i) % self->capacity;
 
-    pax_slice_read(slice, index % self->capacity, value);
+        Pax_Slice left  = pax_slice_range_length(slice, j, 1);
+        Pax_Slice right = pax_slice_range_length(other, i, 1);
 
-    self->length -= 1;
-    self->tail    = prev % self->capacity;
+        pax_slice_copy(right, left);
+    }
 
-    return 1;
+    self->length -= length;
+
+    return length;
 }
 
-paxb8
-pax_array_ring_peek_pure(Pax_Array_Ring* self, paxiword index, void* memory, paxiword stride)
+paxiword
+pax_array_ring_peek_pure(Pax_Array_Ring* self, paxiword index, void* memory, paxiword length, paxiword stride)
 {
-    if (index < 0 || index >= self->length || self->stride != stride)
-        return 0;
+    paxiword elements = self->length;
+
+    index  = pax_between(index,  0, elements - 1);
+    length = pax_between(length, 0, elements - index);
+
+    if (self->stride != stride) return 0;
 
     Pax_Slice slice =
-        pax_slice_make(self->memory, 0, self->capacity, stride);
+        pax_slice_make(self->memory, self->capacity, stride);
 
-    Pax_Slice value = pax_slice_make(memory, 0, 1, stride);
+    Pax_Slice other = pax_slice_make(memory, length, stride);
 
-    paxiword temp = self->head + index;
+    for (paxiword i = 0; i < length; i += 1) {
+        paxiword j = (self->offset + index + i) % self->capacity;
 
-    pax_slice_read(slice, temp % self->capacity, value);
+        Pax_Slice left  = pax_slice_range_length(slice, j, 1);
+        Pax_Slice right = pax_slice_range_length(other, i, 1);
 
-    return 1;
+        pax_slice_copy(right, left);
+    }
+
+    return length;
 }
 
 void*
-pax_array_ring_peek_pure_or_null(Pax_Array_Ring* self, paxiword index)
+pax_array_ring_peek_pure_or_null(Pax_Array_Ring* self, paxiword index, paxiword stride)
 {
+    if (self->stride != stride) return 0;
+
     if (index < 0 || index >= self->length)
         return 0;
 
-    paxiword temp = (self->head + index) % self->capacity;
+    paxiword other = (self->offset + index) % self->capacity;
 
-    return &self->memory[temp * self->stride];
+    return &self->memory[other * self->stride];
 }
 
-paxb8
-pax_array_ring_update_pure(Pax_Array_Ring* self, paxiword index, void* memory, paxiword stride)
+paxiword
+pax_array_ring_update_pure(Pax_Array_Ring* self, paxiword index, void* memory, paxiword length, paxiword stride)
 {
-    if (index < 0 || index >= self->length || self->stride != stride)
-        return 0;
+    paxiword elements = self->length;
+
+    index  = pax_between(index,  0, elements - 1);
+    length = pax_between(length, 0, elements - index);
+
+    if (self->stride != stride) return 0;
 
     Pax_Slice slice =
-        pax_slice_make(self->memory, 0, self->capacity, stride);
+        pax_slice_make(self->memory, self->capacity, stride);
 
-    Pax_Slice value = pax_slice_make(memory, 0, 1, stride);
+    Pax_Slice other = pax_slice_make(memory, length, stride);
 
-    paxiword temp = self->head + index;
+    for (paxiword i = 0; i < length; i += 1) {
+        paxiword j = (self->offset + index + i) % self->capacity;
 
-    pax_slice_write(slice, temp % self->capacity, value);
+        Pax_Slice left  = pax_slice_range_length(slice, j, 1);
+        Pax_Slice right = pax_slice_range_length(other, i, 1);
 
-    return 1;
+        pax_slice_copy(left, right);
+    }
+
+    return length;
 }
 
 #endif // PAX_CORE_MEMORY_ARRAY_RING_C
