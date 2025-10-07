@@ -1,7 +1,7 @@
 #ifndef PAX_CORE_PROCESS_CHANNEL_H
 #define PAX_CORE_PROCESS_CHANNEL_H
 
-#include "synchro.h"
+#include "./synchro.h"
 
 #define pax_channel_create(arena, type, amount) \
     pax_channel_create_pure(arena, amount, pax_size(type))

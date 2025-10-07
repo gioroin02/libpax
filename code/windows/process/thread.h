@@ -1,7 +1,7 @@
 #ifndef PAX_WINDOWS_PROCESS_THREAD_H
 #define PAX_WINDOWS_PROCESS_THREAD_H
 
-#include "import.h"
+#include "./import.h"
 
 typedef struct Pax_Windows_Thread Pax_Windows_Thread;
 

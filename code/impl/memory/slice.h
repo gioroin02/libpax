@@ -1,7 +1,7 @@
 #ifndef PAX_CORE_MEMORY_SLICE_H
 #define PAX_CORE_MEMORY_SLICE_H
 
-#include "import.h"
+#include "./import.h"
 
 #define pax_slice_from_block(type, memory) \
     pax_slice_make(memory, pax_size_block(type, memory), pax_size(type))

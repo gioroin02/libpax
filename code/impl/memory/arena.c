@@ -1,7 +1,7 @@
 #ifndef PAX_CORE_MEMORY_ARENA_C
 #define PAX_CORE_MEMORY_ARENA_C
 
-#include "arena.h"
+#include "./arena.h"
 
 static paxiword
 pax_arena_align_forw(Pax_Arena* self, paxiword align)

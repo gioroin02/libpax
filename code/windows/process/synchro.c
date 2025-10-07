@@ -1,7 +1,7 @@
 #ifndef PAX_WINDOWS_PROCESS_SYNCHRO_C
 #define PAX_WINDOWS_PROCESS_SYNCHRO_C
 
-#include "synchro.h"
+#include "./synchro.h"
 
 #define NOMINMAX
 #define NOGDI

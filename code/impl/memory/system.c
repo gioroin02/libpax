@@ -1,7 +1,7 @@
 #ifndef PAX_CORE_MEMORY_SYSTEM_C
 #define PAX_CORE_MEMORY_SYSTEM_C
 
-#include "system.h"
+#include "./system.h"
 
 #if PAX_SYSTEM == PAX_SYSTEM_WINDOWS
 

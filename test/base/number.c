@@ -5,18 +5,18 @@
 int
 main(int argc, char** argv)
 {
-    paxi8  sgn0 = pax_sgn_f32(-1.56);
-    paxf32 mag0 = pax_mag_f32(-1.56);
+    paxi8  sign0 = pax_sign_f32(-1.56);
+    paxf32 magn0 = pax_magn_f32(-1.56);
 
-    printf("sgn, mag = %i, %f\n", sgn0, mag0);
+    printf("sign, magn = %i, %f\n", sign0, magn0);
 
-    paxi8  sgn1 = pax_sgn_f32(+1.56);
-    paxf32 mag1 = pax_mag_f32(+1.56);
+    paxi8  sign1 = pax_sign_f32(+1.56);
+    paxf32 magn1 = pax_magn_f32(+1.56);
 
-    printf("sgn, mag = %i, %f\n", sgn1, mag1);
+    printf("sign, magn = %i, %f\n", sign1, magn1);
 
-    paxi8  sgn2 = pax_sgn_f32(0);
-    paxf32 mag2 = pax_mag_f32(0);
+    paxi8  sign2 = pax_sign_f32(0);
+    paxf32 magn2 = pax_magn_f32(0);
 
-    printf("sgn, mag = %i, %f\n", sgn2, mag2);
+    printf("sign, magn = %i, %f\n", sign2, magn2);
 }

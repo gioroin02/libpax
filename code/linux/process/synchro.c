@@ -1,7 +1,7 @@
 #ifndef PAX_LINUX_PROCESS_SYNCHRO_C
 #define PAX_LINUX_PROCESS_SYNCHRO_C
 
-#include "synchro.h"
+#include "./synchro.h"
 
 #include <pthread.h>
 

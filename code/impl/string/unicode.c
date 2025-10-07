@@ -1,7 +1,7 @@
 #ifndef PAX_CORE_STRING_UNICODE_C
 #define PAX_CORE_STRING_UNICODE_C
 
-#include "unicode.h"
+#include "./unicode.h"
 
 paxb8
 pax_unicode_is_valid(paxi32 value)

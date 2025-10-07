@@ -1,7 +1,7 @@
 #ifndef PAX_WINDOWS_PROCESS_SYNCHRO_H
 #define PAX_WINDOWS_PROCESS_SYNCHRO_H
 
-#include "import.h"
+#include "./import.h"
 
 typedef struct Pax_Windows_Lock Pax_Windows_Lock;
 typedef struct Pax_Windows_Cond Pax_Windows_Cond;

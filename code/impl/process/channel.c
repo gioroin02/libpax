@@ -1,7 +1,7 @@
 #ifndef PAX_CORE_PROCESS_CHANNEL_C
 #define PAX_CORE_PROCESS_CHANNEL_C
 
-#include "channel.h"
+#include "./channel.h"
 
 Pax_Channel
 pax_channel_create_pure(Pax_Arena* arena, paxiword amount, paxiword stride)

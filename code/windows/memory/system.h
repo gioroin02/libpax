@@ -1,7 +1,7 @@
 #ifndef PAX_WINDOWS_MEMORY_SYSTEM_H
 #define PAX_WINDOWS_MEMORY_SYSTEM_H
 
-#include "import.h"
+#include "./import.h"
 
 paxiword
 pax_windows_memory_page_size();

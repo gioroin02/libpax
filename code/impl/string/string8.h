@@ -1,7 +1,7 @@
 #ifndef PAX_CORE_STRING_STRING8_H
 #define PAX_CORE_STRING_STRING8_H
 
-#include "buffer8.h"
+#include "./buffer8.h"
 
 #define pax_str8(x) (Pax_String8) {pax_as(paxu8*, x), pax_size_block(paxu8, x) - 1}
 

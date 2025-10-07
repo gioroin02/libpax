@@ -1,7 +1,7 @@
 #ifndef PAX_WINDOWS_PROCESS_SYSTEM_H
 #define PAX_WINDOWS_PROCESS_SYSTEM_H
 
-#include "import.h"
+#include "./import.h"
 
 paxiword
 pax_windows_process_core_amount();

@@ -1,7 +1,7 @@
 #ifndef PAX_CORE_STRING_BUFFER8_C
 #define PAX_CORE_STRING_BUFFER8_C
 
-#include "buffer8.h"
+#include "./buffer8.h"
 
 Pax_Buffer8
 pax_buffer8_make(paxu8* memory, paxiword length)

@@ -1,7 +1,7 @@
 #ifndef PAX_LINUX_TIME_CLOCK_C
 #define PAX_LINUX_TIME_CLOCK_C
 
-#include "clock.h"
+#include "./clock.h"
 
 #if !defined(_POSIX_C_SOURCE)
 

@@ -1,7 +1,7 @@
 #ifndef PAX_LINUX_PROCESS_SYNCHRO_H
 #define PAX_LINUX_PROCESS_SYNCHRO_H
 
-#include "import.h"
+#include "./import.h"
 
 typedef struct Pax_Linux_Lock Pax_Linux_Lock;
 typedef struct Pax_Linux_Cond Pax_Linux_Cond;

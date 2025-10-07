@@ -1,7 +1,7 @@
 #ifndef PAX_CORE_MEMORY_ARRAY_H
 #define PAX_CORE_MEMORY_ARRAY_H
 
-#include "arena.h"
+#include "./arena.h"
 
 #define pax_array_make(type, memory, length) \
     pax_array_make_pure(memory, length, pax_size(type))

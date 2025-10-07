@@ -1,7 +1,7 @@
 #ifndef PAX_CORE_TIME_CLOCK_H
 #define PAX_CORE_TIME_CLOCK_H
 
-#include "import.h"
+#include "./import.h"
 
 typedef void* Pax_Clock;
 

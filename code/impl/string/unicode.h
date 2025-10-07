@@ -1,7 +1,7 @@
 #ifndef PAX_CORE_STRING_UNICODE_H
 #define PAX_CORE_STRING_UNICODE_H
 
-#include "import.h"
+#include "./import.h"
 
 #define PX_ASCII_ITEMS pax_as(paxiword, 128)
 

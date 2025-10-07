@@ -1,7 +1,7 @@
 #ifndef PAX_CORE_PROCESS_THREAD_C
 #define PAX_CORE_PROCESS_THREAD_C
 
-#include "thread.h"
+#include "./thread.h"
 
 #if PAX_SYSTEM == PAX_SYSTEM_WINDOWS
 

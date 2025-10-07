@@ -1,7 +1,7 @@
 #ifndef PAX_CORE_MEMORY_SLICE_C
 #define PAX_CORE_MEMORY_SLICE_C
 
-#include "slice.h"
+#include "./slice.h"
 
 Pax_Slice
 pax_slice_make(void* memory, paxiword length, paxiword stride)
@@ -89,9 +89,9 @@ pax_slice_copy_flipped(Pax_Slice self, Pax_Slice value)
 void*
 pax_slice_shift(Pax_Slice self, paxiword index, paxiword length, paxiword about)
 {
-    paxuword value = pax_mag_integer(about);
+    paxuword value = pax_magn_integer(about);
 
-    switch (pax_sgn_integer(about)) {
+    switch (pax_sign_integer(about)) {
         case +1:
             return pax_slice_shift_forw(self, index, length, about);
 

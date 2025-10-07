@@ -1,7 +1,7 @@
 #ifndef PAX_LINUX_MEMORY_SYSTEM_C
 #define PAX_LINUX_MEMORY_SYSTEM_C
 
-#include "system.h"
+#include "./system.h"
 
 #define _DEFAULT_SOURCE
 

@@ -1,7 +1,7 @@
 #ifndef PAX_CORE_MEMORY_ARRAY_C
 #define PAX_CORE_MEMORY_ARRAY_C
 
-#include "array.h"
+#include "./array.h"
 
 static Pax_Slice
 pax_array_range_length(Pax_Array* self, paxiword index, paxiword length)
@@ -122,7 +122,7 @@ pax_array_insert_pure(Pax_Array* self, paxiword index, void* memory, paxiword le
     paxiword elements = self->length;
     paxiword capacity = self->capacity - self->length;
 
-    index  = pax_between(index,  0, elements - 1);
+    index  = pax_between(index,  0, elements);
     length = pax_between(length, 0, capacity - index);
 
     if (self->stride != stride) return 0;

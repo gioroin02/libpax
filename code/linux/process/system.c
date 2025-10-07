@@ -1,7 +1,7 @@
 #ifndef PAX_LINUX_PROCESS_SYSTEM_C
 #define PAX_LINUX_PROCESS_SYSTEM_C
 
-#include "system.h"
+#include "./system.h"
 
 #if !defined(_POSIX_C_SOURCE)
 

@@ -1,7 +1,7 @@
 #ifndef PAX_WINDOWS_PROCESS_THREAD_C
 #define PAX_WINDOWS_PROCESS_THREAD_C
 
-#include "thread.h"
+#include "./thread.h"
 
 #define NOMINMAX
 #define NOGDI

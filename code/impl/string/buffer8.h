@@ -1,7 +1,7 @@
 #ifndef PAX_CORE_STRING_BUFFER8_H
 #define PAX_CORE_STRING_BUFFER8_H
 
-#include "unicode.h"
+#include "./unicode.h"
 
 typedef Pax_Array Pax_Buffer8;
 

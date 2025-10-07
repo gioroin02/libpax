@@ -1,7 +1,7 @@
 #ifndef PAX_LINUX_PROCESS_THREAD_H
 #define PAX_LINUX_PROCESS_THREAD_H
 
-#include "import.h"
+#include "./import.h"
 
 typedef struct Pax_Linux_Thread Pax_Linux_Thread;
 

@@ -1,7 +1,7 @@
 #ifndef PAX_CORE_TIME_CLOCK_C
 #define PAX_CORE_TIME_CLOCK_C
 
-#include "clock.h"
+#include "./clock.h"
 
 #if PAX_SYSTEM == PAX_SYSTEM_WINDOWS
 

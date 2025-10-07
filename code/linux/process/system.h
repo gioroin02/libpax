@@ -1,7 +1,7 @@
 #ifndef PAX_LINUX_PROCESS_SYSTEM_H
 #define PAX_LINUX_PROCESS_SYSTEM_H
 
-#include "import.h"
+#include "./import.h"
 
 paxiword
 pax_linux_process_core_amount();

@@ -1,7 +1,7 @@
 #ifndef PAX_WINDOWS_TIME_CLOCK_C
 #define PAX_WINDOWS_TIME_CLOCK_C
 
-#include "clock.h"
+#include "./clock.h"
 
 #define NOMINMAX
 #define NOGDI

@@ -1,7 +1,7 @@
 #ifndef PAX_WINDOWS_TIME_CLOCK_H
 #define PAX_WINDOWS_TIME_CLOCK_H
 
-#include "import.h"
+#include "./import.h"
 
 typedef struct Pax_Windows_Clock Pax_Windows_Clock;
 

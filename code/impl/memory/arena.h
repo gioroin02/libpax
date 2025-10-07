@@ -1,7 +1,7 @@
 #ifndef PAX_CORE_MEMORY_ARENA_H
 #define PAX_CORE_MEMORY_ARENA_H
 
-#include "slice.h"
+#include "./slice.h"
 
 #define pax_arena_from_block(memory) pax_arena_make(memory, pax_size(memory))
 

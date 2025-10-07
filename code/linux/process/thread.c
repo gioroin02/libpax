@@ -1,7 +1,7 @@
 #ifndef PAX_LINUX_PROCESS_THREAD_C
 #define PAX_LINUX_PROCESS_THREAD_C
 
-#include "thread.h"
+#include "./thread.h"
 
 #include <pthread.h>
 

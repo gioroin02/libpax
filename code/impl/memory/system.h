@@ -1,7 +1,7 @@
 #ifndef PAX_CORE_MEMORY_SYSTEM_H
 #define PAX_CORE_MEMORY_SYSTEM_H
 
-#include "arena.h"
+#include "./arena.h"
 
 paxiword
 pax_memory_page_size();

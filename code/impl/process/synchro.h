@@ -1,7 +1,7 @@
 #ifndef PAX_CORE_PROCESS_SYNCHRO_H
 #define PAX_CORE_PROCESS_SYNCHRO_H
 
-#include "import.h"
+#include "./import.h"
 
 typedef void* Pax_Lock;
 typedef void* Pax_Cond;

@@ -1,7 +1,7 @@
 #ifndef PAX_CORE_PROCESS_SYNCHRO_C
 #define PAX_CORE_PROCESS_SYNCHRO_C
 
-#include "synchro.h"
+#include "./synchro.h"
 
 #if PAX_SYSTEM == PAX_SYSTEM_WINDOWS
 

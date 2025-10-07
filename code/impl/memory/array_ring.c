@@ -1,7 +1,7 @@
 #ifndef PAX_CORE_MEMORY_ARRAY_RING_C
 #define PAX_CORE_MEMORY_ARRAY_RING_C
 
-#include "array_ring.h"
+#include "./array_ring.h"
 
 Pax_Array_Ring
 pax_array_ring_make_pure(void* memory, paxiword length, paxiword stride, paxiword offset)
