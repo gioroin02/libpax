@@ -76,7 +76,7 @@ pax_string8_copy_unicode(Pax_Arena* arena, paxi32 value)
 Pax_String8
 pax_string8_range(Pax_String8 self, paxiword start, paxiword stop)
 {
-    return pax_string8_range(self, start, stop - start);
+    return pax_string8_range_length(self, start, stop - start);
 }
 
 Pax_String8
@@ -85,7 +85,11 @@ pax_string8_range_length(Pax_String8 self, paxiword index, paxiword length)
     index  = pax_between(index,  0, self.length - 1);
     length = pax_between(length, 0, self.length - index);
 
-    return pax_string8_make(self.memory + index, length);
+    if (length <= 0) return (Pax_String8) {0};
+
+    paxu8* memory = self.memory + index;
+
+    return pax_string8_make(memory, length);
 }
 
 Pax_String8

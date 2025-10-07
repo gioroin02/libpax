@@ -3,7 +3,7 @@
 
 #include "./platform.h"
 
-#define pax_as(t, x) ((t) x)
+#define pax_as(t, x) ((t)(x))
 
 #define pax_block_from_vargs(t, ...) (t[]) {__VA_ARGS__}
 

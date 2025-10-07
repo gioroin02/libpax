@@ -29,6 +29,8 @@ pax_slice_range_length(Pax_Slice self, paxiword index, paxiword length)
     index  = pax_between(index,  0, self.length - 1);
     length = pax_between(length, 0, self.length - index);
 
+    if (length <= 0) return pax_slice_make(0, 0, 0);
+
     paxu8* memory = self.memory + self.stride * index;
 
     return pax_slice_make(memory, length, self.stride);
