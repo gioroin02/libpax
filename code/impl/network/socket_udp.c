@@ -24,18 +24,18 @@
 
     #include "../../linux/network/socket_udp.c"
 
-    #define __pax_socket_udp_create__     pax_linuxSocket_UDP_create
-    #define __pax_socket_udp_destroy__    pax_linuxSocket_UDP_destroy
-    #define __pax_socket_udp_get_addr__   pax_linuxSocket_UDP_get_addr
-    #define __pax_socket_udp_get_port__   pax_linuxSocket_UDP_get_port
-    #define __pax_socket_udp_bind__       pax_linuxSocket_UDP_bind
-    #define __pax_socket_udp_listen__     pax_linuxSocket_UDP_listen
-    #define __pax_socket_udp_connect__    pax_linuxSocket_UDP_connect
-    #define __pax_socket_udp_accept__     pax_linuxSocket_UDP_accept
-    #define __pax_socket_udp_write__      pax_linuxSocket_UDP_write
-    #define __pax_socket_udp_write_host__ pax_linuxSocket_UDP_write_host
-    #define __pax_socket_udp_read__       pax_linuxSocket_UDP_read
-    #define __pax_socket_udp_read_host__  pax_linuxSocket_UDP_read_host
+    #define __pax_socket_udp_create__     pax_linux_socket_udp_create
+    #define __pax_socket_udp_destroy__    pax_linux_socket_udp_destroy
+    #define __pax_socket_udp_get_addr__   pax_linux_socket_udp_get_addr
+    #define __pax_socket_udp_get_port__   pax_linux_socket_udp_get_port
+    #define __pax_socket_udp_bind__       pax_linux_socket_udp_bind
+    #define __pax_socket_udp_listen__     pax_linux_socket_udp_listen
+    #define __pax_socket_udp_connect__    pax_linux_socket_udp_connect
+    #define __pax_socket_udp_accept__     pax_linux_socket_udp_accept
+    #define __pax_socket_udp_write__      pax_linux_socket_udp_write
+    #define __pax_socket_udp_write_host__ pax_linux_socket_udp_write_host
+    #define __pax_socket_udp_read__       pax_linux_socket_udp_read
+    #define __pax_socket_udp_read_host__  pax_linux_socket_udp_read_host
 
 #else
 

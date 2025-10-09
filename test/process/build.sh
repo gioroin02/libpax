@@ -10,5 +10,7 @@ test_channel="$test_dir/process/channel.c"
 
 impl="$impl_base $impl_memory $impl_process"
 
-gcc --std=c99 $impl $test_system  -o process_system.exe
-gcc --std=c99 $impl $test_channel -o process_channel.exe
+lib="-pthread"
+
+gcc --std=c99 $impl $test_system  $lib -o process_system.exe
+gcc --std=c99 $impl $test_channel $lib -o process_channel.exe

@@ -9,7 +9,8 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 
-typedef struct socklen_t        Pax_Sock_Size;
+typedef socklen_t Pax_Sock_Size;
+
 typedef struct sockaddr_storage Pax_Sock_Data;
 typedef struct sockaddr         Pax_Sock;
 typedef struct sockaddr_in      Pax_Sock4;

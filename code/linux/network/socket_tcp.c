@@ -46,7 +46,7 @@ pax_linux_socket_tcp_destroy(Px_Linux_Socket_TCP* self)
     } while (result == -1 && errno == EINTR);
 
     self->handle = -1;
-    self->addr   = (Pax_Sock_Data) {0};
+    self->data   = (Pax_Sock_Data) {0};
 }
 
 Pax_Addr
