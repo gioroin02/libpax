@@ -19,9 +19,9 @@ pax_string8_make(paxu8* memory, paxiword length)
 Pax_String8
 pax_string8_from_memory(void* memory, paxiword length, paxiword stride)
 {
-    if (stride != pax_size(paxu8)) return (Pax_String8) {0};
-
     paxiword index = 0;
+
+    if (stride != pax_size(paxu8)) return (Pax_String8) {0};
 
     while (index < length) {
         if (pax_as(paxu8*, memory)[index] == 0)
@@ -107,11 +107,10 @@ pax_string8_range_tail(Pax_String8 self, paxiword tail)
 paxiword
 pax_string8_peek_memory8(Pax_String8 self, paxiword index, paxu8* memory, paxiword length)
 {
-    paxiword elements = self.length;
-    paxiword stride   = pax_size(paxu8);
+    paxiword stride = pax_size(paxu8);
 
-    index  = pax_between(index,  0, elements - 1);
-    length = pax_between(length, 0, elements - index);
+    index  = pax_between(index,  0, self.length - 1);
+    length = pax_between(length, 0, self.length - index);
 
     Pax_Slice slice =
         pax_slice_make(self.memory, self.length, stride);

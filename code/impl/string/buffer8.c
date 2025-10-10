@@ -2,6 +2,7 @@
 #define PAX_CORE_STRING_BUFFER8_C
 
 #include "./buffer8.h"
+#include "unicode.h"
 
 Pax_Buffer8
 pax_buffer8_make(paxu8* memory, paxiword length)
@@ -79,6 +80,29 @@ pax_buffer8_write_head_memory8(Pax_Buffer8* self, paxu8* memory, paxiword length
 }
 
 paxiword
+pax_buffer8_write_head(Pax_Buffer8* self, paxu8 value)
+{
+    paxiword index = pax_array_head(self);
+
+    return pax_array_insert(self, paxu8,
+        index, &value, 1);
+}
+
+paxiword
+pax_buffer8_write_head_unicode(Pax_Buffer8* self, paxi32 value)
+{
+    Pax_UTF8 utf8 = {0};
+
+    if (pax_utf8_encode(&utf8, value) <= 0)
+        return 0;
+
+    paxiword index = pax_array_head(self);
+
+    return pax_array_insert(self, paxu8,
+        index, utf8.items, utf8.size);
+}
+
+paxiword
 pax_buffer8_write_head_buffer8(Pax_Buffer8* self, Pax_Buffer8* value)
 {
     paxu8*   memory = value->memory;
@@ -94,10 +118,33 @@ pax_buffer8_write_head_buffer8(Pax_Buffer8* self, Pax_Buffer8* value)
 paxiword
 pax_buffer8_write_tail_memory8(Pax_Buffer8* self, paxu8* memory, paxiword length)
 {
-    paxiword index = pax_array_tail(self);
+    paxiword index = pax_array_tail(self) + 1;
 
     return pax_array_insert(self,
-        paxu8, index + 1, memory, length);
+        paxu8, index, memory, length);
+}
+
+paxiword
+pax_buffer8_write_tail(Pax_Buffer8* self, paxu8 value)
+{
+    paxiword index = pax_array_tail(self) + 1;
+
+    return pax_array_insert(self, paxu8,
+        index, &value, 1);
+}
+
+paxiword
+pax_buffer8_write_tail_unicode(Pax_Buffer8* self, paxi32 value)
+{
+    Pax_UTF8 utf8 = {0};
+
+    if (pax_utf8_encode(&utf8, value) <= 0)
+        return 0;
+
+    paxiword index = pax_array_tail(self) + 1;
+
+    return pax_array_insert(self, paxu8,
+        index, utf8.items, utf8.size);
 }
 
 paxiword
@@ -123,6 +170,30 @@ pax_buffer8_read_head_memory8(Pax_Buffer8* self, paxu8* memory, paxiword length)
 }
 
 paxiword
+pax_buffer8_read_head(Pax_Buffer8* self, paxu8* value)
+{
+    paxiword index = pax_array_head(self);
+
+    return pax_array_remove(self,
+        paxu8, index, &value, 1);
+}
+
+paxiword
+pax_buffer8_read_head_unicode(Pax_Buffer8* self, paxi32* value)
+{
+    paxu8*   memory = self->memory;
+    paxiword length = self->length;
+    paxiword index  = pax_array_head(self);
+
+    paxiword result = pax_utf8_read_forw(
+        memory, length, index, value);
+
+    pax_array_remove(self, paxu8, index, 0, result);
+
+    return result;
+}
+
+paxiword
 pax_buffer8_read_head_buffer8(Pax_Buffer8* self, Pax_Buffer8* value)
 {
     paxu8*   memory = value->memory   + value->length;
@@ -142,6 +213,30 @@ pax_buffer8_read_tail_memory8(Pax_Buffer8* self, paxu8* memory, paxiword length)
 
     return pax_array_remove(self,
         paxu8, index - length, memory, length);
+}
+
+paxiword
+pax_buffer8_read_tail(Pax_Buffer8* self, paxu8* value)
+{
+    paxiword index = pax_array_tail(self);
+
+    return pax_array_remove(self,
+        paxu8, index, &value, 1);
+}
+
+paxiword
+pax_buffer8_read_tail_unicode(Pax_Buffer8* self, paxi32* value)
+{
+    paxu8*   memory = self->memory;
+    paxiword length = self->length;
+    paxiword index  = pax_array_tail(self);
+
+    paxiword result = pax_utf8_read_back(
+        memory, length, index, value);
+
+    pax_array_remove(self, paxu8, index, 0, result);
+
+    return result;
 }
 
 paxiword
@@ -185,6 +280,18 @@ pax_buffer8_peek_or_none(Pax_Buffer8* self, paxiword index)
         return result;
 
     return 0;
+}
+
+paxi32
+pax_buffer8_peek_unicode_or_none(Pax_Buffer8* self, paxiword index)
+{
+    paxu8*   memory = self->memory;
+    paxiword length = self->length;
+    paxi32   result = 0;
+
+    pax_utf8_read_forw(memory, length, index, &result);
+
+    return result;
 }
 
 #endif // PAX_CORE_STRING_BUFFER8_C

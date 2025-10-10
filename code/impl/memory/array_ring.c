@@ -150,9 +150,7 @@ pax_array_ring_is_full(Pax_Array_Ring* self)
 paxiword
 pax_array_ring_insert_head_pure(Pax_Array_Ring* self, void* memory, paxiword length, paxiword stride)
 {
-    paxiword capacity = self->capacity - self->length;
-
-    length = pax_between(length, 0, capacity);
+    length = pax_between(length, 0, self->capacity - self->length);
 
     if (self->stride != stride) return 0;
 
@@ -181,9 +179,7 @@ pax_array_ring_insert_head_pure(Pax_Array_Ring* self, void* memory, paxiword len
 paxiword
 pax_array_ring_insert_tail_pure(Pax_Array_Ring* self, void* memory, paxiword length, paxiword stride)
 {
-    paxiword capacity = self->capacity - self->length;
-
-    length = pax_between(length, 0, capacity);
+    length = pax_between(length, 0, self->capacity - self->length);
 
     if (self->stride != stride) return 0;
 
@@ -210,9 +206,7 @@ pax_array_ring_insert_tail_pure(Pax_Array_Ring* self, void* memory, paxiword len
 paxiword
 pax_array_ring_remove_head_pure(Pax_Array_Ring* self, void* memory, paxiword length, paxiword stride)
 {
-    paxiword elements = self->length;
-
-    length = pax_between(length, 0, elements);
+    length = pax_between(length, 0, self->length);
 
     if (self->stride != stride) return 0;
 
@@ -240,9 +234,7 @@ pax_array_ring_remove_head_pure(Pax_Array_Ring* self, void* memory, paxiword len
 paxiword
 pax_array_ring_remove_tail_pure(Pax_Array_Ring* self, void* memory, paxiword length, paxiword stride)
 {
-    paxiword elements = self->length;
-
-    length = pax_between(length, 0, elements);
+    length = pax_between(length, 0, self->length);
 
     if (self->stride != stride) return 0;
 
@@ -269,10 +261,8 @@ pax_array_ring_remove_tail_pure(Pax_Array_Ring* self, void* memory, paxiword len
 paxiword
 pax_array_ring_peek_pure(Pax_Array_Ring* self, paxiword index, void* memory, paxiword length, paxiword stride)
 {
-    paxiword elements = self->length;
-
-    index  = pax_between(index,  0, elements - 1);
-    length = pax_between(length, 0, elements - index);
+    index  = pax_between(index,  0, self->length - 1);
+    length = pax_between(length, 0, self->length - index);
 
     if (self->stride != stride) return 0;
 
@@ -309,10 +299,8 @@ pax_array_ring_peek_pure_or_null(Pax_Array_Ring* self, paxiword index, paxiword 
 paxiword
 pax_array_ring_update_pure(Pax_Array_Ring* self, paxiword index, void* memory, paxiword length, paxiword stride)
 {
-    paxiword elements = self->length;
-
-    index  = pax_between(index,  0, elements - 1);
-    length = pax_between(length, 0, elements - index);
+    index  = pax_between(index,  0, self->length - 1);
+    length = pax_between(length, 0, self->length - index);
 
     if (self->stride != stride) return 0;
 

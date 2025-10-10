@@ -16,12 +16,12 @@ main(int argc, char** argv)
     paxiword size = pax_buffer8_peek_buffer8(&buffer0, 2, &buffer1);
 
     for (paxiword i = 0; i < pax_buffer8_length(&buffer0); i += 1) {
-        paxu8 byte = pax_buffer8_peek_or_none(&buffer0, i);
+        paxi32 item = pax_buffer8_peek_unicode_or_none(&buffer0, i);
 
-        printf("\\x%02x", byte);
+        printf("\\x%08lx", item);
 
-        if (pax_unicode_is_ascii(byte) != 0 && pax_unicode_is_ascii_cntrl(byte) == 0)
-            printf(", %c", byte);
+        if (pax_unicode_is_ascii(item) != 0 && pax_unicode_is_ascii_cntrl(item) == 0)
+            printf(", %c", pax_as(paxu8, item));
 
         printf("\n");
     }
@@ -29,12 +29,12 @@ main(int argc, char** argv)
     printf("\nvs\n\n");
 
     for (paxiword i = 0; i < pax_buffer8_length(&buffer1); i += 1) {
-        paxu8 byte = pax_buffer8_peek_or_none(&buffer1, i);
+        paxi32 item = pax_buffer8_peek_unicode_or_none(&buffer0, i);
 
-        printf("\\x%02x", byte);
+        printf("\\x%08lx", item);
 
-        if (pax_unicode_is_ascii(byte) != 0 && pax_unicode_is_ascii_cntrl(byte) == 0)
-            printf(", %c", byte);
+        if (pax_unicode_is_ascii(item) != 0 && pax_unicode_is_ascii_cntrl(item) == 0)
+            printf(", %c", pax_as(paxu8, item));
 
         printf("\n");
     }

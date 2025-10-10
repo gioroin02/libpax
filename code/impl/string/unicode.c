@@ -379,7 +379,7 @@ pax_utf16_decode(Pax_UTF16* self, paxi32* value)
         case 1: temp = self->a; break;
 
         case 2:
-            if (pax_unicode_is_surrogate_high(self->b) == 0)
+            if (pax_unicode_is_surrogate_low(self->b) == 0)
                 return 0;
 
             temp += (self->a - 0xd800) << 10;

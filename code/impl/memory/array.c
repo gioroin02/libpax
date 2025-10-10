@@ -119,11 +119,8 @@ pax_array_is_full(Pax_Array* self)
 paxiword
 pax_array_insert_pure(Pax_Array* self, paxiword index, void* memory, paxiword length, paxiword stride)
 {
-    paxiword elements = self->length;
-    paxiword capacity = self->capacity - self->length;
-
-    index  = pax_between(index,  0, elements);
-    length = pax_between(length, 0, capacity - index);
+    index  = pax_between(index,  0, self->length);
+    length = pax_between(length, 0, self->capacity - index);
 
     if (self->stride != stride) return 0;
 
@@ -143,10 +140,8 @@ pax_array_insert_pure(Pax_Array* self, paxiword index, void* memory, paxiword le
 paxiword
 pax_array_remove_pure(Pax_Array* self, paxiword index, void* memory, paxiword length, paxiword stride)
 {
-    paxiword elements = self->length;
-
-    index  = pax_between(index,  0, elements - 1);
-    length = pax_between(length, 0, elements - index);
+    index  = pax_between(index,  0, self->length - 1);
+    length = pax_between(length, 0, self->length - index);
 
     paxiword delta = index + length;
 
@@ -168,10 +163,8 @@ pax_array_remove_pure(Pax_Array* self, paxiword index, void* memory, paxiword le
 paxiword
 pax_array_peek_pure(Pax_Array* self, paxiword index, void* memory, paxiword length, paxiword stride)
 {
-    paxiword elements = self->length;
-
-    index  = pax_between(index,  0, elements - 1);
-    length = pax_between(length, 0, elements - index);
+    index  = pax_between(index,  0, self->length - 1);
+    length = pax_between(length, 0, self->length - index);
 
     if (self->stride != stride) return 0;
 
@@ -197,10 +190,8 @@ pax_array_peek_pure_or_null(Pax_Array* self, paxiword index, paxiword stride)
 paxiword
 pax_array_update_pure(Pax_Array* self, paxiword index, void* memory, paxiword length, paxiword stride)
 {
-    paxiword elements = self->length;
-
-    index  = pax_between(index,  0, elements - 1);
-    length = pax_between(length, 0, elements - index);
+    index  = pax_between(index,  0, self->length - 1);
+    length = pax_between(length, 0, self->length - index);
 
     if (self->stride != stride) return 0;
 
