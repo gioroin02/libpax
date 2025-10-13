@@ -152,10 +152,10 @@ pax_array_remove_pure(Pax_Array* self, paxiword index, void* memory, paxiword le
 
     pax_slice_read(slice, index, other);
 
-    if (index < self->length)
-        pax_slice_shift_back(slice, delta, self->length - delta, length);
-
     self->length -= length;
+
+    if (index + 1 < self->length)
+        pax_slice_shift_back(slice, delta, self->length - delta, length);
 
     return length;
 }

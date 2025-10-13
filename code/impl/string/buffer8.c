@@ -67,7 +67,7 @@ pax_buffer8_drop_tail(Pax_Buffer8* self, paxiword length)
     paxiword index = pax_array_tail(self);
 
     return pax_array_remove(self, paxu8,
-        index, 0, length);
+        index - length, 0, length);
 }
 
 paxiword
