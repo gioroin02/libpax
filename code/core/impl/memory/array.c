@@ -143,8 +143,6 @@ pax_array_remove_pure(Pax_Array* self, paxiword index, void* memory, paxiword le
     index  = pax_between(index,  0, self->length - 1);
     length = pax_between(length, 0, self->length - index);
 
-    paxiword delta = index + length;
-
     if (self->stride != stride) return 0;
 
     Pax_Slice slice = pax_array_range(self, 0, self->capacity);
@@ -152,10 +150,12 @@ pax_array_remove_pure(Pax_Array* self, paxiword index, void* memory, paxiword le
 
     pax_slice_read(slice, index, other);
 
-    self->length -= length;
+    paxiword temp = index + length;
 
-    if (index + 1 < self->length)
-        pax_slice_shift_back(slice, delta, self->length - delta, length);
+    if (temp < self->length)
+        pax_slice_shift_back(slice, temp, self->length - temp, length);
+
+    self->length -= length;
 
     return length;
 }

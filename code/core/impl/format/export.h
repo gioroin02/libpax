@@ -7,4 +7,6 @@
 #include "./integer.h"
 #include "./boolean.h"
 
+#include "./scanner.h"
+
 #endif // PAX_CORE_FORMAT_EXPORT_H

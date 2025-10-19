@@ -12,9 +12,11 @@ set "impl_format=%impl_dir%\format\export.c"
 set "test_unsigned=%test_dir%\format\unsigned.c"
 set "test_integer=%test_dir%\format\integer.c"
 set "test_boolean=%test_dir%\format\boolean.c"
+set "test_scanner=%test_dir%\format\scanner.c"
 
 set "impl=%impl_base% %impl_memory% %impl_string% %impl_stream% %impl_format%"
 
 zig cc --std=c99 %impl% %test_unsigned% -o format_unsigned.exe
 zig cc --std=c99 %impl% %test_integer%  -o format_integer.exe
 zig cc --std=c99 %impl% %test_boolean%  -o format_boolean.exe
+zig cc --std=c99 %impl% %test_scanner%  -o format_scanner.exe
