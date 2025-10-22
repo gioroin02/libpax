@@ -1,4 +1,4 @@
-#include "../../code/impl/process/export.h"
+#include "../../../code/core/impl/process/export.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -24,7 +24,7 @@ generator_proc(Pax_Channel* channel)
         pax_channel_insert(channel, paxu8,
             pax_block_from_vargs(paxu8, 'A' + i));
 
-        pax_current_thread_sleep(rand() % 250);
+        pax_current_thread_sleep(rand() % 128);
     }
 
     pax_channel_insert(channel, paxu8,

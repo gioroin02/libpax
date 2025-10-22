@@ -1,16 +1,19 @@
 @echo off
 
-set "impl_dir=.\code\impl"
-set "test_dir=.\test"
+set "code_core_dir=.\code\core\impl"
 
-set "impl_base=%impl_dir%\base\export.c"
-set "impl_memory=%impl_dir%\memory\export.c"
-set "impl_process=%impl_dir%\process\export.c"
+set "test_core_dir=.\test\core"
 
-set "test_system=%test_dir%\process\system.c"
-set "test_channel=%test_dir%\process\channel.c"
+set "base=%code_core_dir%\base\export.c"
+set "memory=%code_core_dir%\memory\export.c"
+set "process=%code_core_dir%\process\export.c"
 
-set "impl=%impl_base% %impl_memory% %impl_process%"
+set "test_system=%test_core_dir%\process\system.c"
+set "test_channel=%test_core_dir%\process\channel.c"
+set "test_pool=%test_core_dir%\process\pool.c"
+
+set "impl=%base% %memory% %process%"
 
 zig cc --std=c99 %impl% %test_system%  -o process_system.exe
 zig cc --std=c99 %impl% %test_channel% -o process_channel.exe
+zig cc --std=c99 %impl% %test_pool%    -o process_pool.exe

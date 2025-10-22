@@ -1,16 +1,17 @@
-impl_dir="./code/impl"
-test_dir="./test"
+code_core_dir="./code/core/impl"
 
-impl_base="$impl_dir/base/export.c"
-impl_memory="$impl_dir/memory/export.c"
-impl_process="$impl_dir/process/export.c"
+test_core_dir="./test/core"
 
-test_system="$test_dir/process/system.c"
-test_channel="$test_dir/process/channel.c"
+base="$code_core_dir/base/export.c"
+memory="$code_core_dir/memory/export.c"
+process="$code_core_dir/process/export.c"
 
-impl="$impl_base $impl_memory $impl_process"
+test_system="$test_core_dir/process/system.c"
+test_channel="$test_core_dir/process/channel.c"
+test_pool="$test_core_dir/process/pool.c"
 
-lib="-pthread"
+impl="$base $memory $process"
 
-gcc --std=c99 $impl $test_system  $lib -o process_system.exe
-gcc --std=c99 $impl $test_channel $lib -o process_channel.exe
+gcc --std=c99 $impl $test_system  -o process_system.exe
+gcc --std=c99 $impl $test_channel -o process_channel.exe
+gcc --std=c99 $impl $test_pool    -o process_pool.exe
