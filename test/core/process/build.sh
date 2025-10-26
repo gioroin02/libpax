@@ -12,6 +12,8 @@ test_pool="$test_core_dir/process/pool.c"
 
 impl="$base $memory $process"
 
-gcc --std=c99 $impl $test_system  -o process_system.exe
-gcc --std=c99 $impl $test_channel -o process_channel.exe
-gcc --std=c99 $impl $test_pool    -o process_pool.exe
+lib="-lrt"
+
+gcc --std=c99 $impl $test_system  $lib -o process_system.exe
+gcc --std=c99 $impl $test_channel $lib -o process_channel.exe
+gcc --std=c99 $impl $test_pool    $lib -o process_pool.exe

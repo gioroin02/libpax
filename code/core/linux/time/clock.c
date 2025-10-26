@@ -1,13 +1,13 @@
 #ifndef PAX_LINUX_TIME_CLOCK_C
 #define PAX_LINUX_TIME_CLOCK_C
 
-#include "./clock.h"
-
 #if !defined(_POSIX_C_SOURCE)
 
     #define _POSIX_C_SOURCE 200809L
 
 #endif
+
+#include "./clock.h"
 
 #include <unistd.h>
 #include <time.h>

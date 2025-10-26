@@ -1,15 +1,16 @@
 #ifndef PAX_LINUX_PROCESS_SYSTEM_C
 #define PAX_LINUX_PROCESS_SYSTEM_C
 
-#include "./system.h"
-
 #if !defined(_POSIX_C_SOURCE)
 
     #define _POSIX_C_SOURCE 200809L
 
 #endif
 
+#include "./system.h"
+
 #include <unistd.h>
+#include <errno.h>
 #include <time.h>
 
 #include <pthread.h>
@@ -30,12 +31,21 @@ pax_linux_process_core_amount()
 void
 pax_linux_current_thread_sleep(paxuword millis)
 {
-    Pax_Time_Spec spec;
+    Pax_Time_Spec spec = {0};
 
     spec.tv_sec  = (millis / 1000);
     spec.tv_nsec = (millis % 1000) * 1000000;
 
-    nanosleep(&spec, 0);
+    int result = 0;
+
+    do {
+        Pax_Time_Spec rest = {0};
+
+        result = clock_nanosleep(
+            CLOCK_MONOTONIC, 0, &spec, &rest);
+
+        spec = rest;
+    } while (result == -1 && errno == EINTR);
 }
 
 paxiword
