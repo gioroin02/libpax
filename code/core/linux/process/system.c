@@ -9,9 +9,10 @@
 
 #include "./system.h"
 
+#include <linux/time.h>
+
 #include <unistd.h>
 #include <errno.h>
-#include <time.h>
 
 #include <pthread.h>
 

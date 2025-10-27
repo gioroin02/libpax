@@ -9,8 +9,9 @@
 
 #include "./clock.h"
 
+#include <linux/time.h>
+
 #include <unistd.h>
-#include <time.h>
 
 typedef struct timespec Pax_Time_Spec;
 

@@ -2,7 +2,6 @@
 #define PAX_CORE_DISPLAY_DISPLAY_C
 
 #include "./display.h"
-#include "config.h"
 
 #if PAX_SYSTEM == PAX_SYSTEM_WINDOWS
 
@@ -12,9 +11,10 @@
     #define __pax_display_destroy__ pax_windows_display_destroy
     #define __pax_display_flush__   pax_windows_display_flush
 
-    #define __pax_display_set_visibility__ pax_windows_display_set_visibility
-
     #define __pax_display_poll_message__ pax_windows_display_poll_message
+
+    #define __pax_display_set_message_filter__ pax_windows_display_set_message_filter
+    #define __pax_display_set_visibility__     pax_windows_display_set_visibility
 
     #define __pax_display_buffer_create__  pax_windows_display_buffer_create
     #define __pax_display_buffer_destroy__ pax_windows_display_buffer_destroy
@@ -30,24 +30,25 @@
 
     #if PAX_DISPLAY_XORG != 0
 
-    #include "../../xorg/display/display.c"
+    #include "../../x11/display/display.c"
 
-        #define __pax_display_create__  pax_xorg_display_create
-        #define __pax_display_destroy__ pax_xorg_display_destroy
-        #define __pax_display_flush__   pax_xorg_display_flush
+        #define __pax_display_create__  pax_x11_display_create
+        #define __pax_display_destroy__ pax_x11_display_destroy
+        #define __pax_display_flush__   pax_x11_display_flush
 
-        #define __pax_display_set_visibility__ pax_xorg_display_set_visibility
+        #define __pax_display_poll_message__ pax_x11_display_poll_message
 
-        #define __pax_display_poll_message__ pax_xorg_display_poll_message
+        #define __pax_display_set_message_filter__ pax_x11_display_set_message_filter
+        #define __pax_display_set_visibility__     pax_x11_display_set_visibility
 
-        #define __pax_display_buffer_create__  pax_xorg_display_buffer_create
-        #define __pax_display_buffer_destroy__ pax_xorg_display_buffer_destroy
-        #define __pax_display_buffer_length__  pax_xorg_display_buffer_length
-        #define __pax_display_buffer_width__   pax_xorg_display_buffer_width
-        #define __pax_display_buffer_height__  pax_xorg_display_buffer_height
-        #define __pax_display_buffer_stride__  pax_xorg_display_buffer_stride
-        #define __pax_display_buffer_write__   pax_xorg_display_buffer_write
-        #define __pax_display_buffer_read__    pax_xorg_display_buffer_read
+        #define __pax_display_buffer_create__  pax_x11_display_buffer_create
+        #define __pax_display_buffer_destroy__ pax_x11_display_buffer_destroy
+        #define __pax_display_buffer_length__  pax_x11_display_buffer_length
+        #define __pax_display_buffer_width__   pax_x11_display_buffer_width
+        #define __pax_display_buffer_height__  pax_x11_display_buffer_height
+        #define __pax_display_buffer_stride__  pax_x11_display_buffer_stride
+        #define __pax_display_buffer_write__   pax_x11_display_buffer_write
+        #define __pax_display_buffer_read__    pax_x11_display_buffer_read
 
     #else
 
@@ -80,15 +81,21 @@ pax_display_flush(Pax_Display self, Pax_Display_Buffer buffer)
 }
 
 paxb8
-pax_display_set_visibility(Pax_Display self, Pax_Display_Visibility visibility)
-{
-    return __pax_display_set_visibility__(self, visibility);
-}
-
-paxb8
 pax_display_poll_message(Pax_Display self, Pax_Display_Message* value)
 {
     return __pax_display_poll_message__(self, value);
+}
+
+void
+pax_display_set_message_filter(Pax_Display self, Pax_Display_Message_Filter filter)
+{
+    __pax_display_set_message_filter__(self, filter);
+}
+
+paxb8
+pax_display_set_visibility(Pax_Display self, Pax_Display_Visibility visibility)
+{
+    return __pax_display_set_visibility__(self, visibility);
 }
 
 Pax_Display_Buffer

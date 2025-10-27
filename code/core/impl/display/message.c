@@ -4,20 +4,20 @@
 #include "./message.h"
 
 Pax_Display_Message
-pax_display_message_close()
+pax_display_message_display_destroy()
 {
     return (Pax_Display_Message) {
-        .kind = PAX_DISPLAY_MESSAGE_KIND_CLOSE,
+        .kind = PAX_DISPLAY_MESSAGE_KIND_DISPLAY_DESTROY,
     };
 }
 
 Pax_Display_Message
-pax_display_message_keybd_button(Pax_Keybd_Button button, paxb8 down, paxiword scan)
+pax_display_message_keyboard_button(Pax_Keyboard_Button button, paxb8 down, paxiword scan)
 {
     return (Pax_Display_Message) {
-        .kind = PAX_DISPLAY_MESSAGE_KIND_KEYBD_BUTTON,
+        .kind = PAX_DISPLAY_MESSAGE_KIND_KEYBOARD_BUTTON,
 
-        .keybd_button = {
+        .keyboard_button = {
             .button = button,
             .scan   = scan,
             .down   = down,

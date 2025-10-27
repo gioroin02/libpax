@@ -27,19 +27,22 @@ main(int argc, char** argv)
     pax_display_set_visibility(display,
         PAX_DISPLAY_VISIBILITY_SHOW);
 
+    pax_display_set_message_filter(display,
+        PAX_DISPLAY_MESSAGE_FILTER_MOUSE_BUTTON);
+
     while (active != 0) {
         Pax_Display_Message message = {0};
 
         while (pax_display_poll_message(display, &message) != 0) {
             switch (message.kind) {
-                case PAX_DISPLAY_MESSAGE_KIND_CLOSE:
+                case PAX_DISPLAY_MESSAGE_KIND_DISPLAY_DESTROY:
                     active = 0;
                 break;
 
-                case PAX_DISPLAY_MESSAGE_KIND_KEYBD_BUTTON: {
-                    Pax_Display_Message_Keybd_Button button = message.keybd_button;
+                case PAX_DISPLAY_MESSAGE_KIND_KEYBOARD_BUTTON: {
+                    Pax_Display_Message_Keyboard_Button button = message.keyboard_button;
 
-                    if (button.button == PAX_KEYBD_BUTTON_ESCAPE)
+                    if (button.button == PAX_KEYBOARD_BUTTON_ESCAPE)
                         active = button.down;
                 } break;
 

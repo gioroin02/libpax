@@ -22,6 +22,8 @@ struct Pax_Windows_Display
 
     paxiword width;
     paxiword height;
+
+    Pax_Display_Message_Filter filter;
 };
 
 struct Pax_Windows_Display_Buffer
@@ -35,100 +37,100 @@ struct Pax_Windows_Display_Buffer
     paxiword stride;
 };
 
-static Pax_Keybd_Button
-pax_windows_map_keybd_button(paxiword value)
+static Pax_Keyboard_Button
+pax_windows_map_keyboard_button(paxiword value)
 {
     switch (value) {
-        case 65: return PAX_KEYBD_BUTTON_A;
-        case 66: return PAX_KEYBD_BUTTON_B;
-        case 67: return PAX_KEYBD_BUTTON_C;
-        case 68: return PAX_KEYBD_BUTTON_D;
-        case 69: return PAX_KEYBD_BUTTON_E;
-        case 70: return PAX_KEYBD_BUTTON_F;
-        case 71: return PAX_KEYBD_BUTTON_G;
-        case 72: return PAX_KEYBD_BUTTON_H;
-        case 73: return PAX_KEYBD_BUTTON_I;
-        case 74: return PAX_KEYBD_BUTTON_J;
-        case 75: return PAX_KEYBD_BUTTON_K;
-        case 76: return PAX_KEYBD_BUTTON_L;
-        case 77: return PAX_KEYBD_BUTTON_M;
-        case 78: return PAX_KEYBD_BUTTON_N;
-        case 79: return PAX_KEYBD_BUTTON_O;
-        case 80: return PAX_KEYBD_BUTTON_P;
-        case 81: return PAX_KEYBD_BUTTON_Q;
-        case 82: return PAX_KEYBD_BUTTON_R;
-        case 83: return PAX_KEYBD_BUTTON_S;
-        case 84: return PAX_KEYBD_BUTTON_T;
-        case 85: return PAX_KEYBD_BUTTON_U;
-        case 86: return PAX_KEYBD_BUTTON_V;
-        case 87: return PAX_KEYBD_BUTTON_W;
-        case 88: return PAX_KEYBD_BUTTON_X;
-        case 89: return PAX_KEYBD_BUTTON_Y;
-        case 90: return PAX_KEYBD_BUTTON_Z;
+        case 65: return PAX_KEYBOARD_BUTTON_A;
+        case 66: return PAX_KEYBOARD_BUTTON_B;
+        case 67: return PAX_KEYBOARD_BUTTON_C;
+        case 68: return PAX_KEYBOARD_BUTTON_D;
+        case 69: return PAX_KEYBOARD_BUTTON_E;
+        case 70: return PAX_KEYBOARD_BUTTON_F;
+        case 71: return PAX_KEYBOARD_BUTTON_G;
+        case 72: return PAX_KEYBOARD_BUTTON_H;
+        case 73: return PAX_KEYBOARD_BUTTON_I;
+        case 74: return PAX_KEYBOARD_BUTTON_J;
+        case 75: return PAX_KEYBOARD_BUTTON_K;
+        case 76: return PAX_KEYBOARD_BUTTON_L;
+        case 77: return PAX_KEYBOARD_BUTTON_M;
+        case 78: return PAX_KEYBOARD_BUTTON_N;
+        case 79: return PAX_KEYBOARD_BUTTON_O;
+        case 80: return PAX_KEYBOARD_BUTTON_P;
+        case 81: return PAX_KEYBOARD_BUTTON_Q;
+        case 82: return PAX_KEYBOARD_BUTTON_R;
+        case 83: return PAX_KEYBOARD_BUTTON_S;
+        case 84: return PAX_KEYBOARD_BUTTON_T;
+        case 85: return PAX_KEYBOARD_BUTTON_U;
+        case 86: return PAX_KEYBOARD_BUTTON_V;
+        case 87: return PAX_KEYBOARD_BUTTON_W;
+        case 88: return PAX_KEYBOARD_BUTTON_X;
+        case 89: return PAX_KEYBOARD_BUTTON_Y;
+        case 90: return PAX_KEYBOARD_BUTTON_Z;
 
-        case 48: return PAX_KEYBD_BUTTON_ZERO;
-        case 49: return PAX_KEYBD_BUTTON_ONE;
-        case 50: return PAX_KEYBD_BUTTON_TWO;
-        case 51: return PAX_KEYBD_BUTTON_THREE;
-        case 52: return PAX_KEYBD_BUTTON_FOUR;
-        case 53: return PAX_KEYBD_BUTTON_FIVE;
-        case 54: return PAX_KEYBD_BUTTON_SIX;
-        case 55: return PAX_KEYBD_BUTTON_SEVEN;
-        case 56: return PAX_KEYBD_BUTTON_EIGHT;
-        case 57: return PAX_KEYBD_BUTTON_NINE;
+        case 48: return PAX_KEYBOARD_BUTTON_ZERO;
+        case 49: return PAX_KEYBOARD_BUTTON_ONE;
+        case 50: return PAX_KEYBOARD_BUTTON_TWO;
+        case 51: return PAX_KEYBOARD_BUTTON_THREE;
+        case 52: return PAX_KEYBOARD_BUTTON_FOUR;
+        case 53: return PAX_KEYBOARD_BUTTON_FIVE;
+        case 54: return PAX_KEYBOARD_BUTTON_SIX;
+        case 55: return PAX_KEYBOARD_BUTTON_SEVEN;
+        case 56: return PAX_KEYBOARD_BUTTON_EIGHT;
+        case 57: return PAX_KEYBOARD_BUTTON_NINE;
 
-        case VK_F1:  return PAX_KEYBD_BUTTON_F1;
-        case VK_F2:  return PAX_KEYBD_BUTTON_F2;
-        case VK_F3:  return PAX_KEYBD_BUTTON_F3;
-        case VK_F4:  return PAX_KEYBD_BUTTON_F4;
-        case VK_F5:  return PAX_KEYBD_BUTTON_F5;
-        case VK_F6:  return PAX_KEYBD_BUTTON_F6;
-        case VK_F7:  return PAX_KEYBD_BUTTON_F7;
-        case VK_F8:  return PAX_KEYBD_BUTTON_F8;
-        case VK_F9:  return PAX_KEYBD_BUTTON_F9;
-        case VK_F10: return PAX_KEYBD_BUTTON_F10;
-        case VK_F11: return PAX_KEYBD_BUTTON_F11;
-        case VK_F12: return PAX_KEYBD_BUTTON_F12;
+        case VK_F1:  return PAX_KEYBOARD_BUTTON_F1;
+        case VK_F2:  return PAX_KEYBOARD_BUTTON_F2;
+        case VK_F3:  return PAX_KEYBOARD_BUTTON_F3;
+        case VK_F4:  return PAX_KEYBOARD_BUTTON_F4;
+        case VK_F5:  return PAX_KEYBOARD_BUTTON_F5;
+        case VK_F6:  return PAX_KEYBOARD_BUTTON_F6;
+        case VK_F7:  return PAX_KEYBOARD_BUTTON_F7;
+        case VK_F8:  return PAX_KEYBOARD_BUTTON_F8;
+        case VK_F9:  return PAX_KEYBOARD_BUTTON_F9;
+        case VK_F10: return PAX_KEYBOARD_BUTTON_F10;
+        case VK_F11: return PAX_KEYBOARD_BUTTON_F11;
+        case VK_F12: return PAX_KEYBOARD_BUTTON_F12;
 
-        case VK_NUMPAD0: return PAX_KEYBD_BUTTON_NUM0;
-        case VK_NUMPAD1: return PAX_KEYBD_BUTTON_NUM1;
-        case VK_NUMPAD2: return PAX_KEYBD_BUTTON_NUM2;
-        case VK_NUMPAD3: return PAX_KEYBD_BUTTON_NUM3;
-        case VK_NUMPAD4: return PAX_KEYBD_BUTTON_NUM4;
-        case VK_NUMPAD5: return PAX_KEYBD_BUTTON_NUM5;
-        case VK_NUMPAD6: return PAX_KEYBD_BUTTON_NUM6;
-        case VK_NUMPAD7: return PAX_KEYBD_BUTTON_NUM7;
-        case VK_NUMPAD8: return PAX_KEYBD_BUTTON_NUM8;
-        case VK_NUMPAD9: return PAX_KEYBD_BUTTON_NUM9;
+        case VK_NUMPAD0: return PAX_KEYBOARD_BUTTON_NUM0;
+        case VK_NUMPAD1: return PAX_KEYBOARD_BUTTON_NUM1;
+        case VK_NUMPAD2: return PAX_KEYBOARD_BUTTON_NUM2;
+        case VK_NUMPAD3: return PAX_KEYBOARD_BUTTON_NUM3;
+        case VK_NUMPAD4: return PAX_KEYBOARD_BUTTON_NUM4;
+        case VK_NUMPAD5: return PAX_KEYBOARD_BUTTON_NUM5;
+        case VK_NUMPAD6: return PAX_KEYBOARD_BUTTON_NUM6;
+        case VK_NUMPAD7: return PAX_KEYBOARD_BUTTON_NUM7;
+        case VK_NUMPAD8: return PAX_KEYBOARD_BUTTON_NUM8;
+        case VK_NUMPAD9: return PAX_KEYBOARD_BUTTON_NUM9;
 
-        case VK_SPACE:  return PAX_KEYBD_BUTTON_SPACE;
-        case VK_RETURN: return PAX_KEYBD_BUTTON_ENTER;
-        case VK_TAB:    return PAX_KEYBD_BUTTON_TAB;
-        case VK_ESCAPE: return PAX_KEYBD_BUTTON_ESCAPE;
-        case VK_BACK:   return PAX_KEYBD_BUTTON_BACKSPACE;
-        case VK_DELETE: return PAX_KEYBD_BUTTON_DELETE;
-        case VK_INSERT: return PAX_KEYBD_BUTTON_INSERT;
-        case VK_HOME:   return PAX_KEYBD_BUTTON_HOME;
-        case VK_END:    return PAX_KEYBD_BUTTON_END;
-        case VK_PRIOR:  return PAX_KEYBD_BUTTON_PAGE_UP;
-        case VK_NEXT:   return PAX_KEYBD_BUTTON_PAGE_DOWN;
+        case VK_SPACE:  return PAX_KEYBOARD_BUTTON_SPACE;
+        case VK_RETURN: return PAX_KEYBOARD_BUTTON_ENTER;
+        case VK_TAB:    return PAX_KEYBOARD_BUTTON_TAB;
+        case VK_ESCAPE: return PAX_KEYBOARD_BUTTON_ESCAPE;
+        case VK_BACK:   return PAX_KEYBOARD_BUTTON_BACKSPACE;
+        case VK_DELETE: return PAX_KEYBOARD_BUTTON_DELETE;
+        case VK_INSERT: return PAX_KEYBOARD_BUTTON_INSERT;
+        case VK_HOME:   return PAX_KEYBOARD_BUTTON_HOME;
+        case VK_END:    return PAX_KEYBOARD_BUTTON_END;
+        case VK_PRIOR:  return PAX_KEYBOARD_BUTTON_PAGE_UP;
+        case VK_NEXT:   return PAX_KEYBOARD_BUTTON_PAGE_DOWN;
 
-        case VK_LEFT:  return PAX_KEYBD_BUTTON_LEFT;
-        case VK_RIGHT: return PAX_KEYBD_BUTTON_RIGHT;
-        case VK_UP:    return PAX_KEYBD_BUTTON_UP;
-        case VK_DOWN:  return PAX_KEYBD_BUTTON_DOWN;
+        case VK_LEFT:  return PAX_KEYBOARD_BUTTON_LEFT;
+        case VK_RIGHT: return PAX_KEYBOARD_BUTTON_RIGHT;
+        case VK_UP:    return PAX_KEYBOARD_BUTTON_UP;
+        case VK_DOWN:  return PAX_KEYBOARD_BUTTON_DOWN;
 
-        case VK_LSHIFT:   return PAX_KEYBD_BUTTON_SHIFT_LEFT;
-        case VK_RSHIFT:   return PAX_KEYBD_BUTTON_SHIFT_RIGHT;
-        case VK_LCONTROL: return PAX_KEYBD_BUTTON_CTRL_LEFT;
-        case VK_RCONTROL: return PAX_KEYBD_BUTTON_CTRL_RIGHT;
-        case VK_LMENU:    return PAX_KEYBD_BUTTON_ALT_LEFT;
-        case VK_RMENU:    return PAX_KEYBD_BUTTON_ALT_RIGHT;
+        case VK_LSHIFT:   return PAX_KEYBOARD_BUTTON_SHIFT_LEFT;
+        case VK_RSHIFT:   return PAX_KEYBOARD_BUTTON_SHIFT_RIGHT;
+        case VK_LCONTROL: return PAX_KEYBOARD_BUTTON_CTRL_LEFT;
+        case VK_RCONTROL: return PAX_KEYBOARD_BUTTON_CTRL_RIGHT;
+        case VK_LMENU:    return PAX_KEYBOARD_BUTTON_ALT_LEFT;
+        case VK_RMENU:    return PAX_KEYBOARD_BUTTON_ALT_RIGHT;
 
         default: break;
     }
 
-    return PAX_KEYBD_BUTTON_NONE;
+    return PAX_KEYBOARD_BUTTON_NONE;
 }
 
 LRESULT CALLBACK
@@ -140,10 +142,7 @@ pax_windows_display_proc(HWND handle, UINT kind, WPARAM wparam, LPARAM lparam)
     switch (kind) {
         case WM_ERASEBKGND: return 1;
 
-        case WM_CLOSE:
-        case WM_DESTROY:
-            PostQuitMessage(0);
-        break;
+        case WM_CLOSE: PostQuitMessage(0); break;
 
         case WM_SIZE: {
             if (self != 0) {
@@ -205,7 +204,6 @@ pax_windows_display_create(Pax_Arena* arena, Pax_String8 name)
                 .lpfnWndProc   = &pax_windows_display_proc,
                 .hInstance     = result->instance,
                 .lpszClassName = class_name,
-                .hbrBackground = 0,
             };
 
             if (RegisterClassW(&temp) != 0) {
@@ -275,24 +273,30 @@ pax_windows_display_poll_message(Pax_Windows_Display* self, Pax_Display_Message*
 
         switch (message.message) {
             case WM_QUIT: {
-                temp  = pax_display_message_close();
+                temp  = pax_display_message_display_destroy();
                 valid = 1;
             } break;
 
             case WM_KEYUP:
             case WM_KEYDOWN: {
-                Pax_Keybd_Button button =
-                    pax_windows_map_keybd_button(message.wParam);
+                if ((self->filter & PAX_DISPLAY_MESSAGE_FILTER_KEYBOARD_BUTTON) != 0)
+                    break;
+
+                Pax_Keyboard_Button button =
+                    pax_windows_map_keyboard_button(message.wParam);
 
                 paxb8    down = message.message == WM_KEYDOWN ? 1 : 0;
                 paxiword scan = pax_as(paxiword, (message.lParam >> 16) & 0xff);
 
-                temp  = pax_display_message_keybd_button(button, down, scan);
+                temp  = pax_display_message_keyboard_button(button, down, scan);
                 valid = 1;
             } break;
 
             case WM_LBUTTONUP:
             case WM_LBUTTONDOWN: {
+                if ((self->filter & PAX_DISPLAY_MESSAGE_FILTER_MOUSE_BUTTON) != 0)
+                    break;
+
                 Pax_Mouse_Button button = PAX_MOUSE_BUTTON_LEFT;
 
                 paxb8 down = message.message == WM_LBUTTONDOWN ? 1 : 0;
@@ -303,6 +307,9 @@ pax_windows_display_poll_message(Pax_Windows_Display* self, Pax_Display_Message*
 
             case WM_MBUTTONUP:
             case WM_MBUTTONDOWN: {
+                if ((self->filter & PAX_DISPLAY_MESSAGE_FILTER_MOUSE_BUTTON) != 0)
+                    break;
+
                 Pax_Mouse_Button button = PAX_MOUSE_BUTTON_MIDDLE;
 
                 paxb8 down = message.message == WM_MBUTTONDOWN ? 1 : 0;
@@ -313,6 +320,9 @@ pax_windows_display_poll_message(Pax_Windows_Display* self, Pax_Display_Message*
 
             case WM_RBUTTONUP:
             case WM_RBUTTONDOWN: {
+                if ((self->filter & PAX_DISPLAY_MESSAGE_FILTER_MOUSE_BUTTON) != 0)
+                    break;
+
                 Pax_Mouse_Button button = PAX_MOUSE_BUTTON_RIGHT;
 
                 paxb8 down = message.message == WM_RBUTTONDOWN ? 1 : 0;
@@ -333,6 +343,12 @@ pax_windows_display_poll_message(Pax_Windows_Display* self, Pax_Display_Message*
     }
 
     return 0;
+}
+
+void
+pax_windows_display_set_message_filter(Pax_Windows_Display* self, Pax_Display_Message_Filter filter)
+{
+    self->filter = filter;
 }
 
 paxb8

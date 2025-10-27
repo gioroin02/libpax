@@ -18,10 +18,13 @@ void
 pax_windows_display_flush(Pax_Windows_Display* self, Pax_Windows_Display_Buffer* buffer);
 
 paxb8
-pax_windows_display_set_visibility(Pax_Windows_Display* self, Pax_Display_Visibility visibility);
+pax_windows_display_poll_message(Pax_Windows_Display* self, Pax_Display_Message* value);
+
+void
+pax_windows_display_set_message_filter(Pax_Windows_Display* self, Pax_Display_Message_Filter filter);
 
 paxb8
-pax_windows_display_poll_message(Pax_Windows_Display* self, Pax_Display_Message* value);
+pax_windows_display_set_visibility(Pax_Windows_Display* self, Pax_Display_Visibility visibility);
 
 /* Display Buffer */
 
