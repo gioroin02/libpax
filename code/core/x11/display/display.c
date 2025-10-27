@@ -392,10 +392,10 @@ pax_x11_display_buffer_create(Pax_X11_Display* self, Pax_Arena* arena, paxiword 
         Visual* visual = DefaultVisual(self->connection, self->screen);
         int     depth  = DefaultDepth(self->connection, self->screen);
 
+        result->memory = pax_arena_reserve_memory(arena, length, stride);
+
         result->image = XCreateImage(self->connection, visual, depth, ZPixmap, 0,
             pax_as(char*, result->memory), width, height, 32, width * stride);
-
-        result->memory = pax_arena_reserve_memory(arena, length, stride);
 
         if (result->memory != 0 && result->image != 0) {
             result->width  = width;
@@ -421,7 +421,8 @@ pax_x11_display_buffer_destroy(Pax_X11_Display_Buffer* self)
 {
     if (self == 0) return;
 
-    XDestroyImage(self->image);
+    if (self->image != 0)
+        XDestroyImage(self->image);
 
     self->memory = 0;
     self->image  = 0;

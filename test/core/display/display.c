@@ -9,14 +9,14 @@
 int
 main(int argc, char** argv)
 {
-    Pax_Arena   arena   = pax_memory_reserve(16);
+    Pax_Arena   arena   = pax_memory_reserve(32);
     Pax_Display display = pax_display_create(&arena, pax_str8("Prova"));
 
     if (display == 0) return 1;
 
     Pax_Display_Buffer buffer_array[2] = {
-        pax_display_buffer_create(display, &arena, 400, 300),
-        pax_display_buffer_create(display, &arena, 400, 300),
+        pax_display_buffer_create(display, &arena, 100, 75),
+        pax_display_buffer_create(display, &arena, 100, 75),
     };
 
     paxiword buffer_index = 0;

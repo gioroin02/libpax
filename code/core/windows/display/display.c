@@ -3,6 +3,8 @@
 
 #include "./display.h"
 
+#include <stdio.h>
+
 #define NOMINMAX
 #define WIN32_LEAN_AND_MEAN
 
@@ -141,6 +143,7 @@ pax_windows_display_proc(HWND handle, UINT kind, WPARAM wparam, LPARAM lparam)
 
     switch (kind) {
         case WM_ERASEBKGND: return 1;
+        case WM_MOVE:       return 0;
 
         case WM_CLOSE: PostQuitMessage(0); break;
 
@@ -160,13 +163,17 @@ pax_windows_display_proc(HWND handle, UINT kind, WPARAM wparam, LPARAM lparam)
             HDC  context = BeginPaint(handle, &paint);
             RECT surface = {0, 0, self->width, self->height};
 
+            FillRect(context, &surface, brush);
+
             if (self->buffer != 0) {
                 Pax_Windows_Display_Buffer* buffer = self->buffer;
 
-                StretchBlt(context, 0, 0, self->width, self->height,
-                    buffer->context, 0, 0, buffer->width, buffer->height, SRCCOPY);
-            } else
-                FillRect(context, &surface, brush);
+                paxiword width  = pax_min(self->width,  buffer->width);
+                paxiword height = pax_min(self->height, buffer->height);
+
+                BitBlt(context, 0, 0, width, height,
+                    buffer->context, 0, 0, SRCCOPY);
+            }
 
             EndPaint(handle, &paint);
         } break;
@@ -200,7 +207,6 @@ pax_windows_display_create(Pax_Arena* arena, Pax_String8 name)
             result->height   = PAX_WINDOWS_DISPLAY_HEIGHT;
 
             WNDCLASSW temp = {
-                .style         = CS_HREDRAW | CS_VREDRAW,
                 .lpfnWndProc   = &pax_windows_display_proc,
                 .hInstance     = result->instance,
                 .lpszClassName = class_name,
@@ -330,6 +336,8 @@ pax_windows_display_poll_message(Pax_Windows_Display* self, Pax_Display_Message*
                 temp  = pax_display_message_mouse_button(button, down);
                 valid = 1;
             } break;
+
+            case WM_PAINT: return 0;
 
             default: break;
         }
