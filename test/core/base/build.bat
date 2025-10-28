@@ -1,12 +1,12 @@
 @echo off
 
-set "impl_dir=.\code\impl"
-set "test_dir=.\test"
+set "code_core_dir=.\code\core\impl"
+set "test_core_dir=.\test\core"
 
-set "impl_base=%impl_dir%\base\export.c"
+set "base=%code_core_dir%\base\export.c"
 
-set "test_number=%test_dir%\base\number.c"
+set "test_number=%test_core_dir%\base\number.c"
 
-set "impl=%impl_base%"
+set "impl=%base%"
 
 zig cc --std=c99 %impl% %test_number% -o base_number.exe

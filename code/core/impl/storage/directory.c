@@ -5,10 +5,10 @@
 
 #if PAX_SYSTEM == PAX_SYSTEM_WINDOWS
 
-    #include "../../windows/storage/directory.c"
+    #include "../../win32/storage/directory.c"
 
-    #define __pax_current_directory_memory8__ pax_windows_current_directory_memory8
-    #define __pax_current_directory__         pax_windows_current_directory
+    #define __pax_current_directory_memory8__ pax_win32_current_directory_memory8
+    #define __pax_current_directory__         pax_win32_current_directory
 
 #elif PAX_SYSTEM == PAX_SYSTEM_LINUX
 

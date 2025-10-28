@@ -47,9 +47,9 @@ paxiword
 pax_x11_display_buffer_stride(Pax_X11_Display_Buffer* self);
 
 paxb8
-pax_x11_display_buffer_write(Pax_X11_Display_Buffer* self, paxiword x, paxiword y, paxu8 r, paxu8 g, paxu8 b, paxu8 a);
+pax_x11_display_buffer_write(Pax_X11_Display_Buffer* self, paxiword x, paxiword y, paxu8 r, paxu8 g, paxu8 b);
 
 paxb8
-pax_x11_display_buffer_read(Pax_X11_Display_Buffer* self, paxiword x, paxiword y, paxu8* r, paxu8* g, paxu8* b, paxu8* a);
+pax_x11_display_buffer_read(Pax_X11_Display_Buffer* self, paxiword x, paxiword y, paxu8* r, paxu8* g, paxu8* b);
 
 #endif // PAX_X11_DISPLAY_DISPLAY_H

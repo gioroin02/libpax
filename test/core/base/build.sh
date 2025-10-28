@@ -1,10 +1,10 @@
-impl_dir="./code/impl"
-test_dir="./test"
+code_core_dir="./code/core/impl"
+test_core_dir="./test/core"
 
-impl_base="$impl_dir/base/export.c"
+base="$code_core_dir/base/export.c"
 
-test_number="$test_dir/base/number.c"
+test_number="$test_core_dir/base/number.c"
 
-impl="$impl_base"
+impl="$base"
 
 gcc --std=c99 $impl $test_number -o base_number.exe

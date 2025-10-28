@@ -1,26 +1,26 @@
 @echo off
 
-set "impl_dir=.\code\impl"
-set "test_dir=.\test"
+set "code_core_dir=.\code\core\impl"
+set "test_core_dir=.\test\core"
 
-set "impl_base=%impl_dir%\base\export.c"
-set "impl_memory=%impl_dir%\memory\export.c"
-set "impl_string=%impl_dir%\string\export.c"
-set "impl_stream=%impl_dir%\stream\export.c"
-set "impl_format=%impl_dir%\format\export.c"
-set "impl_network=%impl_dir%\network\export.c"
+set "base=%code_core_dir%\base\export.c"
+set "memory=%code_core_dir%\memory\export.c"
+set "string=%code_core_dir%\string\export.c"
+set "stream=%code_core_dir%\stream\export.c"
+set "format=%code_core_dir%\format\export.c"
+set "network=%code_core_dir%\network\export.c"
 
-set "test_addr_ip4=%test_dir%\network\addr_ip4.c"
-set "test_addr_ip6=%test_dir%\network\addr_ip6.c"
-set "test_addr=%test_dir%\network\addr.c"
+set "test_addr_ip4=%test_core_dir%\network\addr_ip4.c"
+set "test_addr_ip6=%test_core_dir%\network\addr_ip6.c"
+set "test_addr=%test_core_dir%\network\addr.c"
 
-set "test_tcp_client=%test_dir%\network\tcp_client.c"
-set "test_tcp_server=%test_dir%\network\tcp_server.c"
+set "test_tcp_client=%test_core_dir%\network\tcp_client.c"
+set "test_tcp_server=%test_core_dir%\network\tcp_server.c"
 
-set "test_udp_client=%test_dir%\network\udp_client.c"
-set "test_udp_server=%test_dir%\network\udp_server.c"
+set "test_udp_client=%test_core_dir%\network\udp_client.c"
+set "test_udp_server=%test_core_dir%\network\udp_server.c"
 
-set "impl=%impl_base% %impl_memory% %impl_string% %impl_stream% %impl_format% %impl_network%"
+set "impl=%base% %memory% %string% %stream% %format% %network%"
 
 set "lib=-lws2_32"
 

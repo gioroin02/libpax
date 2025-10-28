@@ -2,4 +2,4 @@
 
 Things to fix:
 
-- In windows console_read waits, in linux it polls
+- In win32 console_read waits, in linux it polls

@@ -5,11 +5,11 @@
 
 #if PAX_SYSTEM == PAX_SYSTEM_WINDOWS
 
-    #include "../../windows/memory/system.c"
+    #include "../../win32/memory/system.c"
 
-    #define __pax_memory_page_size__ pax_windows_memory_page_size
-    #define __pax_memory_reserve__   pax_windows_memory_reserve
-    #define __pax_memory_release__   pax_windows_memory_release
+    #define __pax_memory_page_size__ pax_win32_memory_page_size
+    #define __pax_memory_reserve__   pax_win32_memory_reserve
+    #define __pax_memory_release__   pax_win32_memory_release
 
 #elif PAX_SYSTEM == PAX_SYSTEM_LINUX
 

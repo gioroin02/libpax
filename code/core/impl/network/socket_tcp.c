@@ -5,18 +5,18 @@
 
 #if PAX_SYSTEM == PAX_SYSTEM_WINDOWS
 
-    #include "../../windows/network/socket_tcp.c"
+    #include "../../win32/network/socket_tcp.c"
 
-    #define __pax_socket_tcp_create__   pax_windows_socket_tcp_create
-    #define __pax_socket_tcp_destroy__  pax_windows_socket_tcp_destroy
-    #define __pax_socket_tcp_get_addr__ pax_windows_socket_tcp_get_addr
-    #define __pax_socket_tcp_get_port__ pax_windows_socket_tcp_get_port
-    #define __pax_socket_tcp_bind__     pax_windows_socket_tcp_bind
-    #define __pax_socket_tcp_listen__   pax_windows_socket_tcp_listen
-    #define __pax_socket_tcp_connect__  pax_windows_socket_tcp_connect
-    #define __pax_socket_tcp_accept__   pax_windows_socket_tcp_accept
-    #define __pax_socket_tcp_write__    pax_windows_socket_tcp_write
-    #define __pax_socket_tcp_read__     pax_windows_socket_tcp_read
+    #define __pax_socket_tcp_create__   pax_win32_socket_tcp_create
+    #define __pax_socket_tcp_destroy__  pax_win32_socket_tcp_destroy
+    #define __pax_socket_tcp_get_addr__ pax_win32_socket_tcp_get_addr
+    #define __pax_socket_tcp_get_port__ pax_win32_socket_tcp_get_port
+    #define __pax_socket_tcp_bind__     pax_win32_socket_tcp_bind
+    #define __pax_socket_tcp_listen__   pax_win32_socket_tcp_listen
+    #define __pax_socket_tcp_connect__  pax_win32_socket_tcp_connect
+    #define __pax_socket_tcp_accept__   pax_win32_socket_tcp_accept
+    #define __pax_socket_tcp_write__    pax_win32_socket_tcp_write
+    #define __pax_socket_tcp_read__     pax_win32_socket_tcp_read
 
 #elif PAX_SYSTEM == PAX_SYSTEM_LINUX
 

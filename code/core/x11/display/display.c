@@ -383,7 +383,7 @@ pax_x11_display_buffer_create(Pax_X11_Display* self, Pax_Arena* arena, paxiword 
 
     paxiword mark   = pax_arena_tell(arena);
     paxiword length = width * height;
-    paxiword stride = pax_size(paxu32);
+    paxiword stride = 3;
 
     Pax_X11_Display_Buffer* result =
         pax_arena_reserve(arena, Pax_X11_Display_Buffer, 1);
@@ -453,7 +453,7 @@ pax_x11_display_buffer_stride(Pax_X11_Display_Buffer* self)
 }
 
 paxb8
-pax_x11_display_buffer_write(Pax_X11_Display_Buffer* self, paxiword x, paxiword y, paxu8 r, paxu8 g, paxu8 b, paxu8 a)
+pax_x11_display_buffer_write(Pax_X11_Display_Buffer* self, paxiword x, paxiword y, paxu8 r, paxu8 g, paxu8 b)
 {
     if (x < 0 || x >= self->width)  return 0;
     if (y < 0 || y >= self->height) return 0;
@@ -463,13 +463,12 @@ pax_x11_display_buffer_write(Pax_X11_Display_Buffer* self, paxiword x, paxiword 
     self->memory[self->stride * index + 0] = r;
     self->memory[self->stride * index + 1] = g;
     self->memory[self->stride * index + 2] = b;
-    self->memory[self->stride * index + 3] = a;
 
     return 1;
 }
 
 paxb8
-pax_x11_display_buffer_read(Pax_X11_Display_Buffer* self, paxiword x, paxiword y, paxu8* r, paxu8* g, paxu8* b, paxu8* a)
+pax_x11_display_buffer_read(Pax_X11_Display_Buffer* self, paxiword x, paxiword y, paxu8* r, paxu8* g, paxu8* b)
 {
     if (x < 0 || x >= self->width)  return 0;
     if (y < 0 || y >= self->height) return 0;
@@ -479,7 +478,6 @@ pax_x11_display_buffer_read(Pax_X11_Display_Buffer* self, paxiword x, paxiword y
     if (r != 0) *r = self->memory[self->stride * index + 0];
     if (g != 0) *g = self->memory[self->stride * index + 1];
     if (b != 0) *b = self->memory[self->stride * index + 2];
-    if (a != 0) *a = self->memory[self->stride * index + 3];
 
     return 1;
 }

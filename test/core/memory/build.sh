@@ -1,15 +1,15 @@
-impl_dir="./code/impl"
-test_dir="./test"
+code_core_dir="./code/core/impl"
+test_core_dir="./test/core"
 
-impl_base="$impl_dir/base/export.c"
-impl_memory="$impl_dir/memory/export.c"
+base="$code_core_dir/base/export.c"
+memory="$code_core_dir/memory/export.c"
 
-test_slice="$test_dir/memory/slice.c"
-test_array="$test_dir/memory/array.c"
-test_array_ring="$test_dir/memory/array_ring.c"
-test_system="$test_dir/memory/system.c"
+test_slice="$test_core_dir/memory/slice.c"
+test_array="$test_core_dir/memory/array.c"
+test_array_ring="$test_core_dir/memory/array_ring.c"
+test_system="$test_core_dir/memory/system.c"
 
-impl="$impl_base $impl_memory"
+impl="$base $memory"
 
 gcc --std=c99 $impl $test_slice      -o memory_slice.exe
 gcc --std=c99 $impl $test_array      -o memory_array.exe

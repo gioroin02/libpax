@@ -10,7 +10,7 @@ typedef void* Pax_Display_Buffer;
 /* Display */
 
 Pax_Display
-pax_display_create(Pax_Arena* arena, Pax_String8 name);
+pax_display_create(Pax_Arena* arena, Pax_String8 name, Pax_Display_Message_Queue queue);
 
 void
 pax_display_destroy(Pax_Display self);
@@ -48,9 +48,9 @@ paxiword
 pax_display_buffer_stride(Pax_Display_Buffer self);
 
 paxb8
-pax_display_buffer_write(Pax_Display_Buffer self, paxiword x, paxiword y, paxu8 r, paxu8 g, paxu8 b, paxu8 a);
+pax_display_buffer_write(Pax_Display_Buffer self, paxiword x, paxiword y, paxu8 r, paxu8 g, paxu8 b);
 
 paxb8
-pax_display_buffer_read(Pax_Display_Buffer self, paxiword x, paxiword y, paxu8* r, paxu8* g, paxu8* b, paxu8* a);
+pax_display_buffer_read(Pax_Display_Buffer self, paxiword x, paxiword y, paxu8* r, paxu8* g, paxu8* b);
 
 #endif // PAX_CORE_DISPLAY_DISPLAY_H

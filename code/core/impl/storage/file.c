@@ -5,19 +5,19 @@
 
 #if PAX_SYSTEM == PAX_SYSTEM_WINDOWS
 
-    #include "../../windows/storage/file.c"
+    #include "../../win32/storage/file.c"
 
-    #define __pax_default_input__  pax_windows_default_input
-    #define __pax_default_output__ pax_windows_default_output
-    #define __pax_default_error__  pax_windows_default_error
+    #define __pax_default_input__  pax_win32_default_input
+    #define __pax_default_output__ pax_win32_default_output
+    #define __pax_default_error__  pax_win32_default_error
 
-    #define __pax_file_create__  pax_windows_file_create
-    #define __pax_file_replace__ pax_windows_file_replace
-    #define __pax_file_open__    pax_windows_file_open
-    #define __pax_file_close__   pax_windows_file_close
-    #define __pax_file_destroy__ pax_windows_file_destroy
-    #define __pax_file_write__   pax_windows_file_write
-    #define __pax_file_read__    pax_windows_file_read
+    #define __pax_file_create__  pax_win32_file_create
+    #define __pax_file_replace__ pax_win32_file_replace
+    #define __pax_file_open__    pax_win32_file_open
+    #define __pax_file_close__   pax_win32_file_close
+    #define __pax_file_destroy__ pax_win32_file_destroy
+    #define __pax_file_write__   pax_win32_file_write
+    #define __pax_file_read__    pax_win32_file_read
 
 #elif PAX_SYSTEM == PAX_SYSTEM_LINUX
 

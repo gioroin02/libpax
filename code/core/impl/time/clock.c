@@ -5,10 +5,10 @@
 
 #if PAX_SYSTEM == PAX_SYSTEM_WINDOWS
 
-    #include "../../windows/time/clock.c"
+    #include "../../win32/time/clock.c"
 
-    #define __pax_clock_create__  pax_windows_clock_create
-    #define __pax_clock_elapsed__ pax_windows_clock_elapsed
+    #define __pax_clock_create__  pax_win32_clock_create
+    #define __pax_clock_elapsed__ pax_win32_clock_elapsed
 
 #elif PAX_SYSTEM == PAX_SYSTEM_LINUX
 

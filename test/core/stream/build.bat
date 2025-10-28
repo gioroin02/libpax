@@ -1,15 +1,15 @@
 @echo off
 
-set "impl_dir=.\code\impl"
-set "test_dir=.\test"
+set "code_core_dir=.\code\core\impl"
+set "test_core_dir=.\test\core"
 
-set "impl_base=%impl_dir%\base\export.c"
-set "impl_memory=%impl_dir%\memory\export.c"
-set "impl_string=%impl_dir%\string\export.c"
-set "impl_stream=%impl_dir%\stream\export.c"
+set "base=%code_core_dir%\base\export.c"
+set "memory=%code_core_dir%\memory\export.c"
+set "string=%code_core_dir%\string\export.c"
+set "stream=%code_core_dir%\stream\export.c"
 
-set "test_stream=%test_dir%\stream\stream.c"
+set "test_stream=%test_core_dir%\stream\stream.c"
 
-set "impl=%impl_base% %impl_memory% %impl_string% %impl_stream%"
+set "impl=%base% %memory% %string% %stream%"
 
 zig cc --std=c99 %impl% %test_stream% -o stream_stream.exe

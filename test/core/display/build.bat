@@ -8,13 +8,12 @@ set "memory=%code_core_dir%\memory\export.c"
 set "string=%code_core_dir%\string\export.c"
 set "display=%code_core_dir%\display\export.c"
 
-set "process=%code_core_dir%\process\export.c"
-
 set "test_display=%test_core_dir%\display\display.c"
 
 set "impl=%base% %memory% %string% %display% %process%"
 
 set "lib=-lgdi32"
-@rem set "lib=-lgdi32 -Wl,--subsystem,windows"
+
+@rem to disable the console "-Wl,--subsystem,windows"
 
 zig cc --std=c99 %impl% %test_display% %lib% -o display_display.exe

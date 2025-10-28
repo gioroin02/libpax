@@ -5,18 +5,18 @@
 
 #if PAX_SYSTEM == PAX_SYSTEM_WINDOWS
 
-    #include "../../windows/process/synchro.c"
+    #include "../../win32/process/synchro.c"
 
-    #define __pax_lock_create__  pax_windows_lock_create
-    #define __pax_lock_destroy__ pax_windows_lock_destroy
-    #define __pax_lock_enter__   pax_windows_lock_enter
-    #define __pax_lock_leave__   pax_windows_lock_leave
+    #define __pax_lock_create__  pax_win32_lock_create
+    #define __pax_lock_destroy__ pax_win32_lock_destroy
+    #define __pax_lock_enter__   pax_win32_lock_enter
+    #define __pax_lock_leave__   pax_win32_lock_leave
 
-    #define __pax_cond_create__    pax_windows_cond_create
-    #define __pax_cond_destroy__   pax_windows_cond_destroy
-    #define __pax_cond_sleep__     pax_windows_cond_sleep
-    #define __pax_cond_wake__      pax_windows_cond_wake
-    #define __pax_cond_wake_all__  pax_windows_cond_wake_all
+    #define __pax_cond_create__    pax_win32_cond_create
+    #define __pax_cond_destroy__   pax_win32_cond_destroy
+    #define __pax_cond_sleep__     pax_win32_cond_sleep
+    #define __pax_cond_wake__      pax_win32_cond_wake
+    #define __pax_cond_wake_all__  pax_win32_cond_wake_all
 
 #elif PAX_SYSTEM == PAX_SYSTEM_LINUX
 

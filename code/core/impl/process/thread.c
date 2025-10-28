@@ -5,11 +5,11 @@
 
 #if PAX_SYSTEM == PAX_SYSTEM_WINDOWS
 
-    #include "../../windows/process/thread.c"
+    #include "../../win32/process/thread.c"
 
-    #define __pax_thread_start__  pax_windows_thread_start
-    #define __pax_thread_wait__   pax_windows_thread_wait
-    #define __pax_thread_detach__ pax_windows_thread_detach
+    #define __pax_thread_start__  pax_win32_thread_start
+    #define __pax_thread_wait__   pax_win32_thread_wait
+    #define __pax_thread_detach__ pax_win32_thread_detach
 
 #elif PAX_SYSTEM == PAX_SYSTEM_LINUX
 

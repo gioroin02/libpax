@@ -5,10 +5,10 @@
 
 #if PAX_SYSTEM == PAX_SYSTEM_WINDOWS
 
-    #include "../../windows/network/system.c"
+    #include "../../win32/network/system.c"
 
-    #define __pax_network_load__   pax_windows_network_load
-    #define __pax_network_unload__ pax_windows_network_unload
+    #define __pax_network_load__   pax_win32_network_load
+    #define __pax_network_unload__ pax_win32_network_unload
 
 #elif PAX_SYSTEM == PAX_SYSTEM_LINUX
 

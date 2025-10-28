@@ -1,8 +1,8 @@
 @echo off
 
 set "code_core_dir=.\code\core\impl"
-set "code_encoding_dir=.\code\encoding"
 
+set "code_encoding_dir=.\code\encoding"
 set "test_encoding_dir=.\test\encoding"
 
 set "base=%code_core_dir%\base\export.c"

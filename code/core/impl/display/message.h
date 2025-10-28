@@ -7,11 +7,14 @@ typedef enum Pax_Display_Message_Filter
 {
     PAX_DISPLAY_MESSAGE_FILTER_NONE = 0,
 
-    PAX_DISPLAY_MESSAGE_FILTER_KEYBOARD_BUTTON = 1 << 0,
+    PAX_DISPLAY_MESSAGE_FILTER_DISPLAY_SIZE   = 1 << 0,
+    PAX_DISPLAY_MESSAGE_FILTER_DISPLAY_COORDS = 1 << 1,
 
-    PAX_DISPLAY_MESSAGE_FILTER_MOUSE_BUTTON = 1 << 1,
-    PAX_DISPLAY_MESSAGE_FILTER_MOUSE_COORDS = 1 << 2,
-    PAX_DISPLAY_MESSAGE_FILTER_MOUSE_WHEEL  = 1 << 3,
+    PAX_DISPLAY_MESSAGE_FILTER_KEYBOARD_BUTTON = 1 << 2,
+
+    PAX_DISPLAY_MESSAGE_FILTER_MOUSE_BUTTON = 1 << 3,
+    PAX_DISPLAY_MESSAGE_FILTER_MOUSE_COORDS = 1 << 4,
+    PAX_DISPLAY_MESSAGE_FILTER_MOUSE_WHEEL  = 1 << 5,
 }
 Pax_Display_Message_Filter;
 
@@ -20,6 +23,8 @@ typedef enum Pax_Display_Message_Kind
     PAX_DISPLAY_MESSAGE_KIND_NONE,
 
     PAX_DISPLAY_MESSAGE_KIND_DISPLAY_DESTROY,
+    PAX_DISPLAY_MESSAGE_KIND_DISPLAY_SIZE,
+    PAX_DISPLAY_MESSAGE_KIND_DISPLAY_COORDS,
 
     PAX_DISPLAY_MESSAGE_KIND_KEYBOARD_BUTTON,
 
@@ -31,7 +36,7 @@ Pax_Display_Message_Kind;
 
 typedef enum Pax_Keyboard_Button
 {
-    PAX_KEYBOARD_BUTTON_NONE = 0,
+    PAX_KEYBOARD_BUTTON_NONE,
 
     PAX_KEYBOARD_BUTTON_A, PAX_KEYBOARD_BUTTON_B, PAX_KEYBOARD_BUTTON_C, PAX_KEYBOARD_BUTTON_D, PAX_KEYBOARD_BUTTON_E, PAX_KEYBOARD_BUTTON_F,
     PAX_KEYBOARD_BUTTON_G, PAX_KEYBOARD_BUTTON_H, PAX_KEYBOARD_BUTTON_I, PAX_KEYBOARD_BUTTON_J, PAX_KEYBOARD_BUTTON_K, PAX_KEYBOARD_BUTTON_L,
@@ -75,14 +80,6 @@ typedef enum Pax_Keyboard_Button
 }
 Pax_Keyboard_Button;
 
-typedef struct Pax_Display_Message_Keyboard_Button
-{
-    Pax_Keyboard_Button button;
-    paxiword         scan;
-    paxb8            down;
-}
-Pax_Display_Message_Keyboard_Button;
-
 typedef enum Pax_Mouse_Button
 {
     PAX_MOUSE_BUTTON_NONE,
@@ -92,12 +89,48 @@ typedef enum Pax_Mouse_Button
 }
 Pax_Mouse_Button;
 
+typedef struct Pax_Display_Message_Display_Size
+{
+    paxiword width;
+    paxiword height;
+}
+Pax_Display_Message_Display_Size;
+
+typedef struct Pax_Display_Message_Display_Coords
+{
+    paxiword x;
+    paxiword y;
+}
+Pax_Display_Message_Display_Coords;
+
+typedef struct Pax_Display_Message_Keyboard_Button
+{
+    Pax_Keyboard_Button button;
+    paxiword            code;
+    paxb8               active;
+}
+Pax_Display_Message_Keyboard_Button;
+
 typedef struct Pax_Display_Message_Mouse_Button
 {
     Pax_Mouse_Button button;
-    paxb8            down;
+    paxb8            active;
 }
 Pax_Display_Message_Mouse_Button;
+
+typedef struct Pax_Display_Message_Mouse_Coords
+{
+    paxiword x;
+    paxiword y;
+}
+Pax_Display_Message_Mouse_Coords;
+
+typedef struct Pax_Display_Message_Mouse_Wheel
+{
+    paxiword x;
+    paxiword y;
+}
+Pax_Display_Message_Mouse_Wheel;
 
 typedef struct Pax_Display_Message
 {
@@ -105,19 +138,63 @@ typedef struct Pax_Display_Message
 
     union
     {
+        Pax_Display_Message_Display_Size   display_size;
+        Pax_Display_Message_Display_Coords display_coords;
+
         Pax_Display_Message_Keyboard_Button keyboard_button;
+
         Pax_Display_Message_Mouse_Button mouse_button;
+        Pax_Display_Message_Mouse_Coords mouse_coords;
+        Pax_Display_Message_Mouse_Wheel  mouse_wheel;
     };
 }
 Pax_Display_Message;
+
+typedef struct Pax_Display_Message_Queue
+{
+    Pax_Array_Ring array;
+}
+Pax_Display_Message_Queue;
+
+/* Message */
 
 Pax_Display_Message
 pax_display_message_display_destroy();
 
 Pax_Display_Message
-pax_display_message_keyboard_button(Pax_Keyboard_Button button, paxb8 down, paxiword scan);
+pax_display_message_display_size(paxiword width, paxiword height);
 
 Pax_Display_Message
-pax_display_message_mouse_button(Pax_Mouse_Button button, paxb8 down);
+pax_display_message_display_coords(paxiword x, paxiword y);
+
+Pax_Display_Message
+pax_display_message_keyboard_button(Pax_Keyboard_Button button, paxb8 active, paxiword code);
+
+Pax_Display_Message
+pax_display_message_mouse_button(Pax_Mouse_Button button, paxb8 active);
+
+Pax_Display_Message
+pax_display_message_mouse_coords(paxiword x, paxiword y);
+
+Pax_Display_Message
+pax_display_message_mouse_wheel(paxiword x, paxiword y);
+
+/* Message queue */
+
+Pax_Display_Message_Queue
+pax_display_message_queue_create(Pax_Arena* arena, paxiword length);
+
+paxb8
+pax_display_message_queue_is_empty(Pax_Display_Message_Queue* self);
+
+paxb8
+pax_display_message_queue_is_full(Pax_Display_Message_Queue* self);
+
+paxb8
+pax_display_message_queue_insert(Pax_Display_Message_Queue* self, Pax_Display_Message value);
+
+paxb8
+pax_display_message_queue_remove(Pax_Display_Message_Queue* self, Pax_Display_Message* value);
+
 
 #endif // PAX_CORE_DISPLAY_MESSAGE_H

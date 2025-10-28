@@ -5,14 +5,14 @@
 
 #if PAX_SYSTEM == PAX_SYSTEM_WINDOWS
 
-    #include "../../windows/console/console.c"
+    #include "../../win32/console/console.c"
 
-    #define __pax_console_create__     pax_windows_console_create
-    #define __pax_console_destroy__    pax_windows_console_destroy
-    #define __pax_console_mode_apply__ pax_windows_console_mode_apply
-    #define __pax_console_mode_query__ pax_windows_console_mode_query
-    #define __pax_console_write__      pax_windows_console_write
-    #define __pax_console_read__       pax_windows_console_read
+    #define __pax_console_create__     pax_win32_console_create
+    #define __pax_console_destroy__    pax_win32_console_destroy
+    #define __pax_console_mode_apply__ pax_win32_console_mode_apply
+    #define __pax_console_mode_query__ pax_win32_console_mode_query
+    #define __pax_console_write__      pax_win32_console_write
+    #define __pax_console_read__       pax_win32_console_read
 
 #elif PAX_SYSTEM == PAX_SYSTEM_LINUX
 
