@@ -10,6 +10,7 @@
 
     #define __pax_display_create__  pax_win32_display_create
     #define __pax_display_destroy__ pax_win32_display_destroy
+    #define __pax_display_clear__   pax_win32_display_clear
     #define __pax_display_flush__   pax_win32_display_flush
 
     #define __pax_display_poll_message__ pax_win32_display_poll_message
@@ -35,6 +36,7 @@
 
         #define __pax_display_create__  pax_x11_display_create
         #define __pax_display_destroy__ pax_x11_display_destroy
+        #define __pax_display_clear__   pax_x11_display_clear
         #define __pax_display_flush__   pax_x11_display_flush
 
         #define __pax_display_poll_message__ pax_x11_display_poll_message
@@ -73,6 +75,12 @@ void
 pax_display_destroy(Pax_Display self)
 {
     __pax_display_destroy__(self);
+}
+
+void
+pax_display_clear(Pax_Display self)
+{
+    __pax_display_clear__(self);
 }
 
 void

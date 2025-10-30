@@ -15,6 +15,9 @@ void
 pax_x11_display_destroy(Pax_X11_Display* self);
 
 void
+pax_x11_display_clear(Pax_X11_Display* self);
+
+void
 pax_x11_display_flush(Pax_X11_Display* self, Pax_X11_Display_Buffer* buffer);
 
 paxb8

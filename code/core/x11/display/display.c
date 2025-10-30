@@ -13,13 +13,13 @@
 
 struct Pax_X11_Display
 {
+    Pax_X11_Display_Buffer* buffer;
+
     Display *connection;
     Window   window;
     int      screen;
 
     Atom wm_delete_window;
-
-    Pax_X11_Display_Buffer* buffer;
 
     paxiword width;
     paxiword height;
@@ -218,18 +218,24 @@ pax_x11_display_destroy(Pax_X11_Display* self)
 }
 
 void
+pax_x11_display_clear(Pax_X11_Display* self)
+{
+    // Empty...
+}
+
+void
 pax_x11_display_flush(Pax_X11_Display* self, Pax_X11_Display_Buffer* buffer)
 {
-    if (buffer != 0) self->buffer = buffer;
-
-    if (self->buffer != 0) {
+    if (buffer != 0) {
         GC context = DefaultGC(self->connection, self->screen);
 
         XPutImage(self->connection, self->window, context,
-            self->buffer->image, 0, 0, 0, 0, self->width, self->height);
-    }
+            buffer->image, 0, 0, 0, 0, self->width, self->height);
 
-    XFlush(self->connection);
+        XFlush(self->connection);
+
+        self->buffer = buffer;
+    }
 }
 
 paxb8
@@ -243,7 +249,7 @@ pax_x11_display_poll_message(Pax_X11_Display* self, Pax_Display_Message* value)
         XNextEvent(self->connection, &event);
 
         switch (event.type) {
-            // case Expose: pax_x11_display_flush(self, 0); break;
+            case Expose: pax_x11_display_clear(self); break;
 
             case ClientMessage: {
                 long item = event.xclient.data.l[0];
@@ -264,17 +270,17 @@ pax_x11_display_poll_message(Pax_X11_Display* self, Pax_Display_Message* value)
                 KeySym keysym = XLookupKeysym(&event.xkey, 0);
 
                 Pax_Keyboard_Button button = pax_x11_map_keyboard_button(keysym);
-                paxb8            down   = (event.type == KeyPress) ? 1 : 0;
-                paxiword         scan   = event.xkey.keycode;
+                paxb8               active = (event.type == KeyPress) ? 1 : 0;
+                paxiword            code   = event.xkey.keycode;
 
-                temp  = pax_display_message_keyboard_button(button, down, scan);
+                temp  = pax_display_message_keyboard_button(button, active, code);
                 valid = 1;
             } break;
 
             case ButtonPress:
             case ButtonRelease: {
                 Pax_Mouse_Button button = PAX_MOUSE_BUTTON_NONE;
-                paxb8            down   = (event.type == ButtonPress) ? 1 : 0;
+                paxb8            active = (event.type == ButtonPress) ? 1 : 0;
 
                 switch (event.xbutton.button) {
                     case Button1: button = PAX_MOUSE_BUTTON_LEFT;   break;
@@ -285,7 +291,7 @@ pax_x11_display_poll_message(Pax_X11_Display* self, Pax_Display_Message* value)
                 }
 
                 if (button != PAX_MOUSE_BUTTON_NONE) {
-                    temp  = pax_display_message_mouse_button(button, down);
+                    temp  = pax_display_message_mouse_button(button, active);
                     valid = 1;
                 }
             } break;
@@ -383,7 +389,7 @@ pax_x11_display_buffer_create(Pax_X11_Display* self, Pax_Arena* arena, paxiword 
 
     paxiword mark   = pax_arena_tell(arena);
     paxiword length = width * height;
-    paxiword stride = 3;
+    paxiword stride = 4;
 
     Pax_X11_Display_Buffer* result =
         pax_arena_reserve(arena, Pax_X11_Display_Buffer, 1);

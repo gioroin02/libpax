@@ -17,22 +17,21 @@
 
 struct Pax_Win32_Display
 {
-    HWND      handle;
-    HINSTANCE instance;
+    Pax_Display_Message_Filter filter;
+    Pax_Display_Message_Queue  queue;
 
     Pax_Win32_Display_Buffer* buffer;
 
+    HWND      handle;
+    HINSTANCE instance;
+
     paxiword width;
     paxiword height;
-
-    Pax_Display_Message_Filter filter;
-    Pax_Display_Message_Queue  queue;
 };
 
 struct Pax_Win32_Display_Buffer
 {
-    HDC     context;
-    HBITMAP bitmap;
+    BITMAPINFO bitmap;
 
     paxu8*   memory;
     paxiword width;
@@ -150,7 +149,6 @@ pax_win32_display_proc(HWND handle, UINT kind, WPARAM wparam, LPARAM lparam)
         case WM_CLOSE:
         case WM_DESTROY: PostQuitMessage(0); break;
 
-        /*
         case WM_SIZE: {
             self->width  = LOWORD(lparam);
             self->height = HIWORD(lparam);
@@ -161,8 +159,6 @@ pax_win32_display_proc(HWND handle, UINT kind, WPARAM wparam, LPARAM lparam)
 
                 pax_display_message_queue_insert(&self->queue, message);
             }
-
-            InvalidateRect(handle, 0, FALSE);
         } break;
 
         case WM_MOVE: {
@@ -176,7 +172,6 @@ pax_win32_display_proc(HWND handle, UINT kind, WPARAM wparam, LPARAM lparam)
                 pax_display_message_queue_insert(&self->queue, message);
             }
         } break;
-         */
 
         case WM_KEYUP:
         case WM_KEYDOWN: {
@@ -238,15 +233,20 @@ pax_win32_display_proc(HWND handle, UINT kind, WPARAM wparam, LPARAM lparam)
         case WM_ERASEBKGND: return 1;
 
         case WM_PAINT: {
-            PAINTSTRUCT paint = {0};
-
-            HDC context = BeginPaint(handle, &paint);
+            PAINTSTRUCT paint   = {0};
+            HDC         context = BeginPaint(handle, &paint);
 
             if (self->buffer != 0) {
                 Pax_Win32_Display_Buffer* buffer = self->buffer;
 
-                StretchBlt(context, 0, 0, self->width, self->height,
-                    buffer->context, 0, 0, buffer->width, buffer->height, SRCCOPY);
+                paxiword left = (self->width  / 2) - (buffer->width  / 2);
+                paxiword top  = (self->height / 2) - (buffer->height / 2);
+
+                paxiword width  = pax_between(buffer->width,  0, self->width  - left);
+                paxiword height = pax_between(buffer->height, 0, self->height - top);
+
+                StretchDIBits(context, left, top, width, height, 0, 0, width, height,
+                    buffer->memory, &buffer->bitmap, DIB_RGB_COLORS, SRCCOPY);
             } else
                 PatBlt(context, 0, 0, self->width, self->height, BLACKNESS);
 
@@ -283,6 +283,7 @@ pax_win32_display_create(Pax_Arena* arena, Pax_String8 name, Pax_Display_Message
             result->queue    = queue;
 
             WNDCLASSW temp = {
+                .style         = CS_HREDRAW | CS_VREDRAW,
                 .lpfnWndProc   = &pax_win32_display_proc,
                 .hInstance     = result->instance,
                 .lpszClassName = class_name,
@@ -303,7 +304,7 @@ pax_win32_display_create(Pax_Arena* arena, Pax_String8 name, Pax_Display_Message
                     SetWindowLongPtr(result->handle,
                         GWLP_USERDATA, pax_as(LONG_PTR, result));
 
-                    pax_win32_display_flush(result, 0);
+                    pax_win32_display_clear(result);
 
                     return result;
                 }
@@ -335,12 +336,36 @@ pax_win32_display_destroy(Pax_Win32_Display* self)
 }
 
 void
+pax_win32_display_clear(Pax_Win32_Display* self)
+{
+    HDC context = GetDC(self->handle);
+
+    PatBlt(context, 0, 0,
+        self->width, self->height, BLACKNESS);
+
+    ReleaseDC(self->handle, context);
+}
+
+void
 pax_win32_display_flush(Pax_Win32_Display* self, Pax_Win32_Display_Buffer* buffer)
 {
-    if (buffer != 0)
-        self->buffer = buffer;
+    HDC context = GetDC(self->handle);
 
-    InvalidateRect(self->handle, 0, FALSE);
+    if (buffer != 0) {
+        paxiword left   = (self->width  / 2) - (buffer->width  / 2);
+        paxiword top    = (self->height / 2) - (buffer->height / 2);
+
+        paxiword width  = pax_between(buffer->width,  0, self->width  - left);
+        paxiword height = pax_between(buffer->height, 0, self->height - top);
+
+        StretchDIBits(context, left, top, width, height, 0, 0, width, height,
+            buffer->memory, &buffer->bitmap, DIB_RGB_COLORS, SRCCOPY);
+
+        self->buffer = buffer;
+    } else
+        PatBlt(context, 0, 0, self->width, self->height, BLACKNESS);
+
+    ReleaseDC(self->handle, context);
 }
 
 paxb8
@@ -350,14 +375,18 @@ pax_win32_display_poll_message(Pax_Win32_Display* self, Pax_Display_Message* val
         MSG event = {0};
 
         if (PeekMessageW(&event, 0, 0, 0, PM_REMOVE) != 0) {
-            TranslateMessage(&event);
-            DispatchMessageW(&event);
+            switch (event.message) {
+                case WM_QUIT: {
+                    Pax_Display_Message message =
+                        pax_display_message_display_destroy();
 
-            if (event.message == WM_QUIT) {
-                Pax_Display_Message message =
-                    pax_display_message_display_destroy();
+                    pax_display_message_queue_insert(&self->queue, message);
+                } break;
 
-                pax_display_message_queue_insert(&self->queue, message);
+                default: {
+                    TranslateMessage(&event);
+                    DispatchMessageW(&event);
+                } break;
             }
         }
     }
@@ -407,45 +436,26 @@ pax_win32_display_buffer_create(Pax_Win32_Display* self, Pax_Arena* arena, paxiw
 
     paxiword mark   = pax_arena_tell(arena);
     paxiword length = width * height;
-    paxiword stride = 3;
+    paxiword stride = 4;
 
     Pax_Win32_Display_Buffer* result =
         pax_arena_reserve(arena, Pax_Win32_Display_Buffer, 1);
 
     if (result != 0) {
-        BITMAPINFO info   = {0};
-        HDC        screen = GetDC(0);
+        result->bitmap.bmiHeader.biSize        = pax_size(BITMAPINFOHEADER);
+        result->bitmap.bmiHeader.biWidth       = width;
+        result->bitmap.bmiHeader.biHeight      = -height;
+        result->bitmap.bmiHeader.biPlanes      = 1;
+        result->bitmap.bmiHeader.biBitCount    = 32;
+        result->bitmap.bmiHeader.biCompression = BI_RGB;
 
-        info.bmiHeader.biSize        = pax_size(BITMAPINFOHEADER);
-        info.bmiHeader.biWidth       = width;
-        info.bmiHeader.biHeight      = -height;
-        info.bmiHeader.biPlanes      = 1;
-        info.bmiHeader.biBitCount    = stride * 8;
-        info.bmiHeader.biCompression = BI_RGB;
+        result->memory = pax_arena_reserve_memory(arena, length, stride);
 
-        result->bitmap = CreateDIBSection(screen, &info,
-            DIB_RGB_COLORS, pax_as(void**, &result->memory), 0, 0);
+        result->width  = width;
+        result->height = height;
+        result->stride = stride;
 
-        ReleaseDC(0, screen);
-
-        if (result->bitmap != 0 && result->memory != 0) {
-            result->context = CreateCompatibleDC(0);
-
-            if (result->context != 0) {
-                SelectObject(result->context, result->bitmap);
-
-                result->width  = width;
-                result->height = height;
-                result->stride = stride;
-
-                Pax_Slice slice = pax_slice_make(
-                    result->memory, length, stride);
-
-                pax_slice_zero(slice);
-
-                return result;
-            }
-        }
+        if (result->memory != 0) return result;
     }
 
     pax_arena_rewind(arena, mark, 0);
@@ -456,16 +466,7 @@ pax_win32_display_buffer_create(Pax_Win32_Display* self, Pax_Arena* arena, paxiw
 void
 pax_win32_display_buffer_destroy(Pax_Win32_Display_Buffer* self)
 {
-    if (self == 0) return;
-
-    if (self->context == 0 || self->bitmap == 0)
-        return;
-
-    DeleteObject(self->bitmap);
-    DeleteDC(self->context);
-
-    self->bitmap  = 0;
-    self->context = 0;
+    // Empty...
 }
 
 paxiword

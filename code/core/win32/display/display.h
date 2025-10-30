@@ -15,6 +15,9 @@ void
 pax_win32_display_destroy(Pax_Win32_Display* self);
 
 void
+pax_win32_display_clear(Pax_Win32_Display* self);
+
+void
 pax_win32_display_flush(Pax_Win32_Display* self, Pax_Win32_Display_Buffer* buffer);
 
 paxb8

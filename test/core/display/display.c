@@ -9,19 +9,27 @@ int
 main(int argc, char** argv)
 {
     Pax_Arena arena = pax_memory_reserve(32);
+    Pax_Arena video = pax_memory_reserve(512);
 
     Pax_Display display = pax_display_create(&arena, pax_str8("Prova"),
         pax_display_message_queue_create(&arena, 32));
 
     if (display == 0) return 1;
 
+    printf("DISPLAY CREATED\n");
+
     Pax_Display_Buffer buffer_array[2] = {
-        pax_display_buffer_create(display, &arena, 200, 150),
-        pax_display_buffer_create(display, &arena, 200, 150),
+        pax_display_buffer_create(display, &video, 400, 400),
+        pax_display_buffer_create(display, &video, 400, 400),
     };
 
     if (buffer_array[0] == 0) return 1;
+
+    printf("DISPLAY BUFFER[0] CREATED\n");
+
     if (buffer_array[1] == 0) return 1;
+
+    printf("DISPLAY BUFFER[1] CREATED\n");
 
     paxiword buffer_index = 0;
     paxb8    active       = 1;
@@ -69,24 +77,20 @@ main(int argc, char** argv)
                 case PAX_DISPLAY_MESSAGE_KIND_DISPLAY_SIZE: {
                     Pax_Display_Message_Display_Size size = message.display_size;
 
-                    printf("Display_Size {x = %lli, y = %lli}\n",
-                        size.width, size.height);
+                    printf("Display_Size {x = %lli, y = %lli}\n", size.width, size.height);
+
+                    pax_display_clear(display);
                 } break;
 
                 case PAX_DISPLAY_MESSAGE_KIND_DISPLAY_COORDS: {
                     Pax_Display_Message_Display_Coords size = message.display_coords;
 
-                    printf("Display_Coords {x = %lli, y = %lli}\n",
-                        size.x, size.y);
+                    printf("Display_Coords {x = %lli, y = %lli}\n", size.x, size.y);
                 } break;
 
                 default: break;
             }
         }
-
-        // disegna su bitmap
-
-        // copia bitmap su buffer
 
         Pax_Display_Buffer buffer = buffer_array[buffer_index];
 
