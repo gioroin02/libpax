@@ -2,13 +2,22 @@
 
 #include <stdio.h>
 
-paxb8
-pax_byte_is_cntrl(paxu8 byte)
+paxiword
+pax_scanner_read_ascii(Pax_Scanner* self, paxu8* memory, paxiword length)
 {
-    if (byte >= 0x00 && byte <= 0x20)
-        return 1;
+    paxu8    byte = 0;
+    paxiword size = 0;
 
-    return 0;
+    while (pax_scanner_peek_byte(self, 0, &byte) > 0) {
+        if (pax_unicode_is_ascii_cntrl(byte) != 0)
+            break;
+
+        memory[size] = byte;
+
+        size += pax_scanner_drop(self, 1);
+    }
+
+    return size;
 }
 
 int
@@ -20,25 +29,24 @@ main(int argc, char** argv)
     Pax_Scanner scanner = pax_scanner_create(&arena, 16,
         pax_source_from_buffer8(&arena, &buffer));
 
-    pax_buffer8_write_tail_string8(&buffer, pax_str8("ciao sono mario"));
+    pax_buffer8_write_tail_string8(&buffer, pax_str8("true truee true"));
 
     paxiword mark = pax_arena_tell(&arena);
 
     while (1) {
-        Pax_String8 item = pax_scanner_read_until(&scanner,
-            0, &arena, 16, &pax_byte_is_cntrl);
+        paxu8 byte = pax_scanner_drop_cntrls(&scanner);
 
-        if (item.length <= 0) break;
+        Pax_Format_Radix radix = PAX_FORMAT_RADIX_10;
+        Pax_Format_Flag  flags = PAX_FORMAT_FLAG_PLUS;
 
-        printf("'%.*s'\n", pax_as(int, item.length),
-            item.memory);
+        paxiword length = 16;
+        paxu8*   memory = pax_arena_reserve(&arena, paxu8, length + 1);
 
-        // pax_scanner_drop(&scanner, item.length);
+        paxiword size = pax_scanner_read_ascii(&scanner, memory, length);
 
-        Pax_String8 drop = pax_scanner_read_while(&scanner,
-            0, &arena, 16, &pax_byte_is_cntrl);
+        if (size <= 0) break;
 
-        // pax_scanner_drop(&scanner, drop.length);
+        printf("[%.*s]\n", pax_as(int, size), memory);
 
         pax_arena_rewind(&arena, mark, 0);
     }

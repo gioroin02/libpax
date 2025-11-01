@@ -55,21 +55,21 @@ json_next_message(Pax_JSON_Reader* reader, Pax_Arena* arena)
                 if (message.name.length > 0)
                     printf(CYA("'%s'") ": ", message.name.memory);
 
-                printf(MAG("%llu"), message.value_unsigned);
+                printf(MAG("+%llu") ":u", message.value_unsigned);
             } break;
 
             case PAX_JSON_MESSAGE_KIND_INTEGER: {
                 if (message.name.length > 0)
                     printf(CYA("'%s'") ": ", message.name.memory);
 
-                printf(MAG("%lli"), message.value_integer);
+                printf(MAG("%+lli") ":i", message.value_integer);
             } break;
 
             case PAX_JSON_MESSAGE_KIND_FLOATING: {
                 if (message.name.length > 0)
                     printf(CYA("'%s'") ": ", message.name.memory);
 
-                printf(MAG("%lf"), message.value_floating);
+                printf(MAG("%+lf") ":f", message.value_floating);
             } break;
 
             case PAX_JSON_MESSAGE_KIND_BOOLEAN: {

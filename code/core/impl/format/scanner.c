@@ -15,65 +15,41 @@ pax_scanner_create(Pax_Arena* arena, paxiword length, Pax_Source* source)
 }
 
 paxiword
-pax_scanner_drop(Pax_Scanner* self, paxiword length)
+pax_scanner_peek_memory8(Pax_Scanner* self, paxiword offset, paxu8* memory, paxiword length)
 {
     paxiword size = 0;
     paxiword temp = 1;
 
+    if (memory == 0 || length <= 0 || offset < 0) return 0;
+
     for (; size < length && temp > 0; size += temp) {
-        if (pax_buffer8_length(&self->buffer) <= 0)
+        paxiword elements = pax_buffer8_length(&self->buffer);
+        paxiword capacity = pax_buffer8_capacity(&self->buffer);
+
+        if (elements <= offset + size) {
+            if (offset + size > capacity - elements)
+                break;
+
             pax_source_read_buffer8(self->source, &self->buffer);
+        }
 
-        temp = pax_buffer8_drop_head(&self->buffer, length - size);
+        temp = pax_buffer8_peek_memory8(&self->buffer,
+            offset + size, memory + size, length - size);
     }
 
     return size;
 }
 
 paxiword
-pax_scanner_drop_while(Pax_Scanner* self, void* proc)
+pax_scanner_peek_byte(Pax_Scanner* self, paxiword offset, paxu8* value)
 {
-    if (proc == 0) return 0;
-
-    paxiword size = 0;
-
-    for (; 1; size += 1) {
-        paxu8 byte = 0;
-
-        paxiword temp = pax_scanner_peek_memory8(self, 0, &byte, 1);
-
-        if (temp <= 0 || byte == 0) break;
-
-        if (pax_as(Pax_Scanner_Proc*, proc)(byte) == 0)
-            break;
-
-        pax_scanner_drop(self, 1);
-    }
-
-    return size;
+    return pax_scanner_peek_memory8(self, offset, value, 1);
 }
 
 paxiword
-pax_scanner_drop_until(Pax_Scanner* self, void* proc)
+pax_scanner_peek_unicode(Pax_Scanner* self, paxiword offset, paxi32* value)
 {
-    if (proc == 0) return 0;
-
-    paxiword size = 0;
-
-    for (; 1; size += 1) {
-        paxu8 byte = 0;
-
-        paxiword temp = pax_scanner_peek_memory8(self, 0, &byte, 1);
-
-        if (temp <= 0 || byte == 0) break;
-
-        if (pax_as(Pax_Scanner_Proc*, proc)(byte) != 0)
-            break;
-
-        pax_scanner_drop(self, 1);
-    }
-
-    return size;
+    return 0;
 }
 
 paxiword
@@ -85,7 +61,9 @@ pax_scanner_read_memory8(Pax_Scanner* self, paxiword offset, paxu8* memory, paxi
     if (pax_scanner_drop(self, offset) < offset) return 0;
 
     for (; size < length && temp > 0; size += temp) {
-        if (pax_buffer8_length(&self->buffer) <= 0)
+        paxiword elements = pax_buffer8_length(&self->buffer);
+
+        if (elements <= 0)
             pax_source_read_buffer8(self->source, &self->buffer);
 
         temp = pax_buffer8_read_head_memory8(&self->buffer,
@@ -95,186 +73,50 @@ pax_scanner_read_memory8(Pax_Scanner* self, paxiword offset, paxu8* memory, paxi
     return size;
 }
 
-Pax_String8
-pax_scanner_read_while(Pax_Scanner* self, paxiword offset, Pax_Arena* arena, paxiword length, void* proc)
+paxiword
+pax_scanner_read_byte(Pax_Scanner* self, paxiword offset, paxu8* value)
 {
-    if (pax_scanner_drop(self, offset) < offset)
-        return (Pax_String8) {0};
-
-    if (length <= 0 || proc == 0) return (Pax_String8) {0};
-
-    paxiword mark   = pax_arena_tell(arena);
-    paxu8*   memory = pax_arena_reserve(arena, paxu8, length + 1);
-
-    paxiword size = 0;
-
-    for (; size < length; size += 1) {
-        paxu8 byte = 0;
-
-        paxiword temp = pax_scanner_peek_memory8(self, 0, &byte, 1);
-
-        if (temp <= 0 || byte == 0) break;
-
-        if (pax_as(Pax_Scanner_Proc*, proc)(byte) == 0)
-            break;
-
-        memory[size] = byte;
-
-        pax_scanner_drop(self, 1);
-    }
-
-    if (size > 0 && size <= length) {
-        Pax_String8 string =
-            pax_string8_make(memory, size);
-
-        pax_arena_rewind(arena, mark, size + 1);
-
-        return string;
-    }
-
-    pax_arena_rewind(arena, mark, 0);
-
-    return (Pax_String8) {0};
-}
-
-Pax_String8
-pax_scanner_read_until(Pax_Scanner* self, paxiword offset, Pax_Arena* arena, paxiword length, void* proc)
-{
-    if (pax_scanner_drop(self, offset) < offset)
-        return (Pax_String8) {0};
-
-    if (length <= 0 || proc == 0) return (Pax_String8) {0};
-
-    paxiword mark   = pax_arena_tell(arena);
-    paxu8*   memory = pax_arena_reserve(arena, paxu8, length + 1);
-
-    paxiword size = 0;
-
-    for (; size < length; size += 1) {
-        paxu8 byte = 0;
-
-        paxiword temp = pax_scanner_peek_memory8(self, 0, &byte, 1);
-
-        if (temp <= 0 || byte == 0) break;
-
-        if (pax_as(Pax_Scanner_Proc*, proc)(byte) != 0)
-            break;
-
-        memory[size] = byte;
-
-        pax_scanner_drop(self, 1);
-    }
-
-    if (size > 0 && size <= length) {
-        Pax_String8 string =
-            pax_string8_make(memory, size);
-
-        pax_arena_rewind(arena, mark, size + 1);
-
-        return string;
-    }
-
-    pax_arena_rewind(arena, mark, 0);
-
-    return (Pax_String8) {0};
+    return pax_scanner_read_memory8(self, offset, value, 1);
 }
 
 paxiword
-pax_scanner_peek_memory8(Pax_Scanner* self, paxiword offset, paxu8* memory, paxiword length)
+pax_scanner_read_unicode(Pax_Scanner* self, paxiword offset, paxi32* value)
+{
+    return 0;
+}
+
+paxiword
+pax_scanner_drop(Pax_Scanner* self, paxiword length)
 {
     paxiword size = 0;
     paxiword temp = 1;
 
-    if (offset < 0) return 0;
-
     for (; size < length && temp > 0; size += temp) {
-        if (pax_buffer8_length(&self->buffer) <= 0)
+        paxiword elements = pax_buffer8_length(&self->buffer);
+
+        if (elements <= 0)
             pax_source_read_buffer8(self->source, &self->buffer);
 
-        if (offset + size >= pax_buffer8_length(&self->buffer))
-            break;
-
-        temp = pax_buffer8_peek_memory8(&self->buffer,
-            offset + size, memory + size, length - size);
+        temp = pax_buffer8_drop_head(&self->buffer, length - size);
     }
 
     return size;
 }
 
-Pax_String8
-pax_scanner_peek_while(Pax_Scanner* self, paxiword offset, Pax_Arena* arena, paxiword length, void* proc)
+paxiword
+pax_scanner_drop_cntrls(Pax_Scanner* self)
 {
-    if (length <= 0 || proc == 0) return (Pax_String8) {0};
-
-    paxiword mark   = pax_arena_tell(arena);
-    paxu8*   memory = pax_arena_reserve(arena, paxu8, length + 1);
-
     paxiword size = 0;
+    paxu8    byte = 0;
 
-    for (; size < length; size += 1) {
-        paxu8 byte = 0;
-
-        paxiword temp = pax_scanner_peek_memory8(self,
-            offset + size, &byte, 1);
-
-        if (temp <= 0 || byte == 0) break;
-
-        if (pax_as(Pax_Scanner_Proc*, proc)(byte) == 0)
+    while (pax_scanner_peek_byte(self, 0, &byte) > 0) {
+        if (pax_unicode_is_ascii_cntrl(byte) == 0)
             break;
 
-        memory[size] = byte;
+        size += pax_scanner_drop(self, 1);
     }
 
-    if (size > 0 && size <= length) {
-        Pax_String8 string =
-            pax_string8_make(memory, size);
-
-        pax_arena_rewind(arena, mark, size + 1);
-
-        return string;
-    }
-
-    pax_arena_rewind(arena, mark, 0);
-
-    return (Pax_String8) {0};
-}
-
-Pax_String8
-pax_scanner_peek_until(Pax_Scanner* self, paxiword offset, Pax_Arena* arena, paxiword length, void* proc)
-{
-    if (length <= 0 || proc == 0) return (Pax_String8) {0};
-
-    paxiword mark   = pax_arena_tell(arena);
-    paxu8*   memory = pax_arena_reserve(arena, paxu8, length + 1);
-
-    paxiword size = 0;
-
-    for (; size < length; size += 1) {
-        paxu8 byte = 0;
-
-        paxiword temp = pax_scanner_peek_memory8(self,
-            offset + size, &byte, 1);
-
-        if (temp <= 0 || byte == 0) break;
-
-        if (pax_as(Pax_Scanner_Proc*, proc)(byte) != 0)
-            break;
-
-        memory[size] = byte;
-    }
-
-    if (size > 0 && size <= length) {
-        Pax_String8 string =
-            pax_string8_make(memory, size);
-
-        pax_arena_rewind(arena, mark, size + 1);
-
-        return string;
-    }
-
-    pax_arena_rewind(arena, mark, 0);
-
-    return (Pax_String8) {0};
+    return size;
 }
 
 #endif // PAX_CORE_FORMAT_SCANNER_C

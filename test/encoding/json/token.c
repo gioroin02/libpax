@@ -46,15 +46,15 @@ json_next_token(Pax_Scanner* self, Pax_Arena* arena)
             break;
 
             case PAX_JSON_TOKEN_KIND_UNSIGNED:
-                printf(MAG("%llu"), token.value_unsigned);
+                printf(MAG("+%llu") ":u", token.value_unsigned);
             break;
 
             case PAX_JSON_TOKEN_KIND_INTEGER:
-                printf(MAG("%lli"), token.value_integer);
+                printf(MAG("%+lli") ":i", token.value_integer);
             break;
 
             case PAX_JSON_TOKEN_KIND_FLOATING:
-                printf(MAG("%lf"), token.value_floating);
+                printf(MAG("%+lf") ":f", token.value_floating);
             break;
 
             case PAX_JSON_TOKEN_KIND_BOOLEAN:

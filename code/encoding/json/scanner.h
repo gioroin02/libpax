@@ -3,9 +3,6 @@
 
 #include "./token.h"
 
-paxu8
-pax_scanner_drop_json_spaces(Pax_Scanner* self);
-
 Pax_JSON_Token
 pax_scanner_read_json_operator(Pax_Scanner* self, Pax_Arena* arena, paxiword length);
 
