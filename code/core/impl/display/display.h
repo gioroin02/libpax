@@ -10,7 +10,7 @@ typedef void* Pax_Display_Buffer;
 /* Display */
 
 Pax_Display
-pax_display_create(Pax_Arena* arena, Pax_String8 name, Pax_Display_Message_Queue queue);
+pax_display_create(Pax_Arena* arena, Pax_String8 name);
 
 void
 pax_display_destroy(Pax_Display self);

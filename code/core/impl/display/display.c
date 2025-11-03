@@ -66,9 +66,9 @@
 #endif
 
 Pax_Display
-pax_display_create(Pax_Arena* arena, Pax_String8 name, Pax_Display_Message_Queue queue)
+pax_display_create(Pax_Arena* arena, Pax_String8 name)
 {
-    return __pax_display_create__(arena, name, queue);
+    return __pax_display_create__(arena, name);
 }
 
 void

@@ -3,8 +3,6 @@
 
 #include "./display.h"
 
-#include <stdio.h>
-
 #define NOMINMAX
 #define WIN32_LEAN_AND_MEAN
 
@@ -17,14 +15,15 @@
 
 struct Pax_Win32_Display
 {
-    Pax_Display_Message_Filter filter;
-    Pax_Display_Message_Queue  queue;
-
     Pax_Win32_Display_Buffer* buffer;
+
+    Pax_Display_Message_Filter filter;
 
     HWND      handle;
     HINSTANCE instance;
 
+    paxiword left;
+    paxiword top;
     paxiword width;
     paxiword height;
 };
@@ -43,43 +42,43 @@ static Pax_Keyboard_Button
 pax_win32_map_keyboard_button(paxiword value)
 {
     switch (value) {
-        case 65: return PAX_KEYBOARD_BUTTON_A;
-        case 66: return PAX_KEYBOARD_BUTTON_B;
-        case 67: return PAX_KEYBOARD_BUTTON_C;
-        case 68: return PAX_KEYBOARD_BUTTON_D;
-        case 69: return PAX_KEYBOARD_BUTTON_E;
-        case 70: return PAX_KEYBOARD_BUTTON_F;
-        case 71: return PAX_KEYBOARD_BUTTON_G;
-        case 72: return PAX_KEYBOARD_BUTTON_H;
-        case 73: return PAX_KEYBOARD_BUTTON_I;
-        case 74: return PAX_KEYBOARD_BUTTON_J;
-        case 75: return PAX_KEYBOARD_BUTTON_K;
-        case 76: return PAX_KEYBOARD_BUTTON_L;
-        case 77: return PAX_KEYBOARD_BUTTON_M;
-        case 78: return PAX_KEYBOARD_BUTTON_N;
-        case 79: return PAX_KEYBOARD_BUTTON_O;
-        case 80: return PAX_KEYBOARD_BUTTON_P;
-        case 81: return PAX_KEYBOARD_BUTTON_Q;
-        case 82: return PAX_KEYBOARD_BUTTON_R;
-        case 83: return PAX_KEYBOARD_BUTTON_S;
-        case 84: return PAX_KEYBOARD_BUTTON_T;
-        case 85: return PAX_KEYBOARD_BUTTON_U;
-        case 86: return PAX_KEYBOARD_BUTTON_V;
-        case 87: return PAX_KEYBOARD_BUTTON_W;
-        case 88: return PAX_KEYBOARD_BUTTON_X;
-        case 89: return PAX_KEYBOARD_BUTTON_Y;
-        case 90: return PAX_KEYBOARD_BUTTON_Z;
+        case PAX_ASCII_UPPER_A: return PAX_KEYBOARD_BUTTON_A;
+        case PAX_ASCII_UPPER_B: return PAX_KEYBOARD_BUTTON_B;
+        case PAX_ASCII_UPPER_C: return PAX_KEYBOARD_BUTTON_C;
+        case PAX_ASCII_UPPER_D: return PAX_KEYBOARD_BUTTON_D;
+        case PAX_ASCII_UPPER_E: return PAX_KEYBOARD_BUTTON_E;
+        case PAX_ASCII_UPPER_F: return PAX_KEYBOARD_BUTTON_F;
+        case PAX_ASCII_UPPER_G: return PAX_KEYBOARD_BUTTON_G;
+        case PAX_ASCII_UPPER_H: return PAX_KEYBOARD_BUTTON_H;
+        case PAX_ASCII_UPPER_I: return PAX_KEYBOARD_BUTTON_I;
+        case PAX_ASCII_UPPER_J: return PAX_KEYBOARD_BUTTON_J;
+        case PAX_ASCII_UPPER_K: return PAX_KEYBOARD_BUTTON_K;
+        case PAX_ASCII_UPPER_L: return PAX_KEYBOARD_BUTTON_L;
+        case PAX_ASCII_UPPER_M: return PAX_KEYBOARD_BUTTON_M;
+        case PAX_ASCII_UPPER_N: return PAX_KEYBOARD_BUTTON_N;
+        case PAX_ASCII_UPPER_O: return PAX_KEYBOARD_BUTTON_O;
+        case PAX_ASCII_UPPER_P: return PAX_KEYBOARD_BUTTON_P;
+        case PAX_ASCII_UPPER_Q: return PAX_KEYBOARD_BUTTON_Q;
+        case PAX_ASCII_UPPER_R: return PAX_KEYBOARD_BUTTON_R;
+        case PAX_ASCII_UPPER_S: return PAX_KEYBOARD_BUTTON_S;
+        case PAX_ASCII_UPPER_T: return PAX_KEYBOARD_BUTTON_T;
+        case PAX_ASCII_UPPER_U: return PAX_KEYBOARD_BUTTON_U;
+        case PAX_ASCII_UPPER_V: return PAX_KEYBOARD_BUTTON_V;
+        case PAX_ASCII_UPPER_W: return PAX_KEYBOARD_BUTTON_W;
+        case PAX_ASCII_UPPER_X: return PAX_KEYBOARD_BUTTON_X;
+        case PAX_ASCII_UPPER_Y: return PAX_KEYBOARD_BUTTON_Y;
+        case PAX_ASCII_UPPER_Z: return PAX_KEYBOARD_BUTTON_Z;
 
-        case 48: return PAX_KEYBOARD_BUTTON_ZERO;
-        case 49: return PAX_KEYBOARD_BUTTON_ONE;
-        case 50: return PAX_KEYBOARD_BUTTON_TWO;
-        case 51: return PAX_KEYBOARD_BUTTON_THREE;
-        case 52: return PAX_KEYBOARD_BUTTON_FOUR;
-        case 53: return PAX_KEYBOARD_BUTTON_FIVE;
-        case 54: return PAX_KEYBOARD_BUTTON_SIX;
-        case 55: return PAX_KEYBOARD_BUTTON_SEVEN;
-        case 56: return PAX_KEYBOARD_BUTTON_EIGHT;
-        case 57: return PAX_KEYBOARD_BUTTON_NINE;
+        case PAX_ASCII_ZERO:  return PAX_KEYBOARD_BUTTON_ZERO;
+        case PAX_ASCII_ONE:   return PAX_KEYBOARD_BUTTON_ONE;
+        case PAX_ASCII_TWO:   return PAX_KEYBOARD_BUTTON_TWO;
+        case PAX_ASCII_THREE: return PAX_KEYBOARD_BUTTON_THREE;
+        case PAX_ASCII_FOUR:  return PAX_KEYBOARD_BUTTON_FOUR;
+        case PAX_ASCII_FIVE:  return PAX_KEYBOARD_BUTTON_FIVE;
+        case PAX_ASCII_SIX:   return PAX_KEYBOARD_BUTTON_SIX;
+        case PAX_ASCII_SEVEN: return PAX_KEYBOARD_BUTTON_SEVEN;
+        case PAX_ASCII_EIGHT: return PAX_KEYBOARD_BUTTON_EIGHT;
+        case PAX_ASCII_NINE:  return PAX_KEYBOARD_BUTTON_NINE;
 
         case VK_F1:  return PAX_KEYBOARD_BUTTON_F1;
         case VK_F2:  return PAX_KEYBOARD_BUTTON_F2;
@@ -135,7 +134,7 @@ pax_win32_map_keyboard_button(paxiword value)
     return PAX_KEYBOARD_BUTTON_NONE;
 }
 
-long long
+long long CALLBACK
 pax_win32_display_proc(HWND handle, UINT kind, WPARAM wparam, LPARAM lparam)
 {
     long long data = GetWindowLongPtr(handle, GWLP_USERDATA);
@@ -147,98 +146,42 @@ pax_win32_display_proc(HWND handle, UINT kind, WPARAM wparam, LPARAM lparam)
 
     switch (kind) {
         case WM_CLOSE:
-        case WM_DESTROY: PostQuitMessage(0); break;
+        case WM_DESTROY: {
+            PostQuitMessage(0);
+
+            return 0;
+        } break;
 
         case WM_SIZE: {
             self->width  = LOWORD(lparam);
             self->height = HIWORD(lparam);
 
-            if ((self->filter & PAX_DISPLAY_MESSAGE_FILTER_DISPLAY_SIZE) == 0) {
-                Pax_Display_Message message =
-                    pax_display_message_display_size(self->width, self->height);
+            if (wparam == SIZE_MAXIMIZED)
+                pax_win32_display_clear(self);
 
-                pax_display_message_queue_insert(&self->queue, message);
-            }
+            return 0;
         } break;
 
         case WM_MOVE: {
-            paxiword x = LOWORD(lparam);
-            paxiword y = HIWORD(lparam);
+            self->left = LOWORD(lparam);
+            self->top  = HIWORD(lparam);
 
-            if ((self->filter & PAX_DISPLAY_MESSAGE_FILTER_DISPLAY_COORDS) == 0) {
-                Pax_Display_Message message =
-                    pax_display_message_display_coords(x, y);
-
-                pax_display_message_queue_insert(&self->queue, message);
-            }
+            return 0;
         } break;
 
-        case WM_KEYUP:
-        case WM_KEYDOWN: {
-            if ((self->filter & PAX_DISPLAY_MESSAGE_FILTER_KEYBOARD_BUTTON) != 0)
-                break;
+        case WM_ERASEBKGND: {
+            pax_win32_display_clear(self);
 
-            Pax_Keyboard_Button button = pax_win32_map_keyboard_button(wparam);
-            paxb8               active = kind == WM_KEYDOWN ? 1 : 0;
-            paxiword            code   = pax_as(paxiword, (lparam >> 16) & 0xff);
-
-            Pax_Display_Message message =
-                pax_display_message_keyboard_button(button, active, code);
-
-            pax_display_message_queue_insert(&self->queue, message);
+            return 1;
         } break;
-
-        case WM_LBUTTONUP:
-        case WM_LBUTTONDOWN: {
-            if ((self->filter & PAX_DISPLAY_MESSAGE_FILTER_MOUSE_BUTTON) != 0)
-                break;
-
-            Pax_Mouse_Button button = PAX_MOUSE_BUTTON_LEFT;
-            paxb8            active = kind == WM_LBUTTONDOWN ? 1 : 0;
-
-            Pax_Display_Message message =
-                pax_display_message_mouse_button(button, active);
-
-            pax_display_message_queue_insert(&self->queue, message);
-        } break;
-
-        case WM_MBUTTONUP:
-        case WM_MBUTTONDOWN: {
-            if ((self->filter & PAX_DISPLAY_MESSAGE_FILTER_MOUSE_BUTTON) != 0)
-                break;
-
-            Pax_Mouse_Button button = PAX_MOUSE_BUTTON_MIDDLE;
-            paxb8            active = kind == WM_MBUTTONDOWN ? 1 : 0;
-
-            Pax_Display_Message message =
-                pax_display_message_mouse_button(button, active);
-
-            pax_display_message_queue_insert(&self->queue, message);
-        } break;
-
-        case WM_RBUTTONUP:
-        case WM_RBUTTONDOWN: {
-            if ((self->filter & PAX_DISPLAY_MESSAGE_FILTER_MOUSE_BUTTON) != 0)
-                break;
-
-            Pax_Mouse_Button button = PAX_MOUSE_BUTTON_RIGHT;
-            paxb8            active = kind == WM_RBUTTONDOWN ? 1 : 0;
-
-            Pax_Display_Message message =
-                pax_display_message_mouse_button(button, active);
-
-            pax_display_message_queue_insert(&self->queue, message);
-        } break;
-
-        case WM_ERASEBKGND: return 1;
 
         case WM_PAINT: {
+            Pax_Win32_Display_Buffer* buffer = self->buffer;
+
             PAINTSTRUCT paint   = {0};
             HDC         context = BeginPaint(handle, &paint);
 
-            if (self->buffer != 0) {
-                Pax_Win32_Display_Buffer* buffer = self->buffer;
-
+            if (buffer != 0) {
                 paxiword left = (self->width  / 2) - (buffer->width  / 2);
                 paxiword top  = (self->height / 2) - (buffer->height / 2);
 
@@ -247,21 +190,21 @@ pax_win32_display_proc(HWND handle, UINT kind, WPARAM wparam, LPARAM lparam)
 
                 StretchDIBits(context, left, top, width, height, 0, 0, width, height,
                     buffer->memory, &buffer->bitmap, DIB_RGB_COLORS, SRCCOPY);
-            } else
-                PatBlt(context, 0, 0, self->width, self->height, BLACKNESS);
+            }
 
             EndPaint(handle, &paint);
+
+            return 0;
         } break;
 
-        default:
-            return DefWindowProcW(handle, kind, wparam, lparam);
+        default: break;
     }
 
-    return 0;
+    return DefWindowProcW(handle, kind, wparam, lparam);
 }
 
 Pax_Win32_Display*
-pax_win32_display_create(Pax_Arena* arena, Pax_String8 name, Pax_Display_Message_Queue queue)
+pax_win32_display_create(Pax_Arena* arena, Pax_String8 name)
 {
     wchar_t* class_name = pax_as(wchar_t*, PAX_WIN32_WINDOW_CLASS.memory);
 
@@ -280,7 +223,6 @@ pax_win32_display_create(Pax_Arena* arena, Pax_String8 name, Pax_Display_Message
             result->instance = GetModuleHandle(0);
             result->width    = PAX_WIN32_DISPLAY_WIDTH;
             result->height   = PAX_WIN32_DISPLAY_HEIGHT;
-            result->queue    = queue;
 
             WNDCLASSW temp = {
                 .style         = CS_HREDRAW | CS_VREDRAW,
@@ -338,10 +280,14 @@ pax_win32_display_destroy(Pax_Win32_Display* self)
 void
 pax_win32_display_clear(Pax_Win32_Display* self)
 {
+    paxiword left   = 0;
+    paxiword top    = 0;
+    paxiword width  = self->width;
+    paxiword height = self->height;
+
     HDC context = GetDC(self->handle);
 
-    PatBlt(context, 0, 0,
-        self->width, self->height, BLACKNESS);
+    PatBlt(context, left, top, width, height, BLACKNESS);
 
     ReleaseDC(self->handle, context);
 }
@@ -349,56 +295,108 @@ pax_win32_display_clear(Pax_Win32_Display* self)
 void
 pax_win32_display_flush(Pax_Win32_Display* self, Pax_Win32_Display_Buffer* buffer)
 {
+    if (buffer == 0) return;
+
     HDC context = GetDC(self->handle);
 
-    if (buffer != 0) {
-        paxiword left   = (self->width  / 2) - (buffer->width  / 2);
-        paxiword top    = (self->height / 2) - (buffer->height / 2);
+    paxiword left = (self->width  / 2) - (buffer->width  / 2);
+    paxiword top  = (self->height / 2) - (buffer->height / 2);
 
-        paxiword width  = pax_between(buffer->width,  0, self->width  - left);
-        paxiword height = pax_between(buffer->height, 0, self->height - top);
+    paxiword width  = pax_between(buffer->width,  0, self->width  - left);
+    paxiword height = pax_between(buffer->height, 0, self->height - top);
 
-        StretchDIBits(context, left, top, width, height, 0, 0, width, height,
-            buffer->memory, &buffer->bitmap, DIB_RGB_COLORS, SRCCOPY);
-
-        self->buffer = buffer;
-    } else
-        PatBlt(context, 0, 0, self->width, self->height, BLACKNESS);
+    StretchDIBits(context, left, top, width, height, 0, 0, width, height,
+        buffer->memory, &buffer->bitmap, DIB_RGB_COLORS, SRCCOPY);
 
     ReleaseDC(self->handle, context);
+
+    self->buffer = buffer;
 }
 
 paxb8
 pax_win32_display_poll_message(Pax_Win32_Display* self, Pax_Display_Message* value)
 {
-    if (pax_display_message_queue_is_empty(&self->queue) != 0) {
-        MSG event = {0};
+    Pax_Display_Message message = {0};
+    MSG                 event   = {0};
 
-        if (PeekMessageW(&event, 0, 0, 0, PM_REMOVE) != 0) {
-            switch (event.message) {
-                case WM_QUIT: {
-                    Pax_Display_Message message =
-                        pax_display_message_display_destroy();
+    while (PeekMessageW(&event, 0, 0, 0, PM_REMOVE) > 0) {
+        TranslateMessage(&event);
+        DispatchMessageW(&event);
 
-                    pax_display_message_queue_insert(&self->queue, message);
-                } break;
+        switch (event.message) {
+            case WM_QUIT: {
+                message = pax_display_message_display_destroy();
+            } break;
 
-                default: {
-                    TranslateMessage(&event);
-                    DispatchMessageW(&event);
-                } break;
-            }
+            case WM_KEYUP:
+            case WM_KEYDOWN: {
+                if ((self->filter & PAX_DISPLAY_MESSAGE_FILTER_KEYBOARD) != 0)
+                    break;
+
+                Pax_Keyboard_Button button = pax_win32_map_keyboard_button(event.wParam);
+                paxb8               active = event.message == WM_KEYDOWN ? 1 : 0;
+                paxiword            code   = pax_as(paxiword, (event.lParam >> 16) & 0xff);
+
+                message = pax_display_message_keyboard_button(button, active, code);
+            } break;
+
+            case WM_LBUTTONUP:
+            case WM_LBUTTONDOWN:
+            case WM_MBUTTONUP:
+            case WM_MBUTTONDOWN:
+            case WM_RBUTTONUP:
+            case WM_RBUTTONDOWN: {
+                if ((self->filter & PAX_DISPLAY_MESSAGE_FILTER_MOUSE) != 0)
+                    break;
+
+                Pax_Mouse_Button button = PAX_MOUSE_BUTTON_NONE;
+                paxb8            active = 0;
+
+                switch (event.message) {
+                    case WM_LBUTTONUP:
+                    case WM_LBUTTONDOWN: {
+                        button = PAX_MOUSE_BUTTON_LEFT;
+                        active = event.message == WM_LBUTTONDOWN ? 1 : 0;
+                    } break;
+
+                    case WM_MBUTTONUP:
+                    case WM_MBUTTONDOWN: {
+                        button = PAX_MOUSE_BUTTON_MIDDLE;
+                        active = event.message == WM_MBUTTONDOWN ? 1 : 0;
+                    } break;
+
+                    case WM_RBUTTONUP:
+                    case WM_RBUTTONDOWN: {
+                        button = PAX_MOUSE_BUTTON_RIGHT;
+                        active = event.message == WM_RBUTTONDOWN ? 1 : 0;
+                    } break;
+
+                    default: break;
+                }
+
+                message = pax_display_message_mouse_button(button, active);
+            } break;
+
+            case WM_EXITSIZEMOVE: {
+                if ((self->filter & PAX_DISPLAY_MESSAGE_FILTER_DISPLAY) != 0)
+                    break;
+
+                message = pax_display_message_display_rect(
+                    self->left, self->top, self->width, self->height);
+            } break;
+
+            default: break;
+        }
+
+        if (message.kind != PAX_DISPLAY_MESSAGE_KIND_NONE) {
+            if (value != 0)
+                *value = message;
+
+            return 1;
         }
     }
 
-    Pax_Display_Message temp = {0};
-
-    if (pax_display_message_queue_remove(&self->queue, &temp) == 0)
-        return 0;
-
-    if (value != 0) *value = temp;
-
-    return 1;
+    return 0;
 }
 
 void

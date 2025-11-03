@@ -11,8 +11,7 @@ main(int argc, char** argv)
     Pax_Arena arena = pax_memory_reserve(32);
     Pax_Arena video = pax_memory_reserve(512);
 
-    Pax_Display display = pax_display_create(&arena, pax_str8("Prova"),
-        pax_display_message_queue_create(&arena, 32));
+    Pax_Display display = pax_display_create(&arena, pax_str8("Prova"));
 
     if (display == 0) return 1;
 
@@ -41,11 +40,18 @@ main(int argc, char** argv)
     while (active != 0) {
         Pax_Display_Message message = {0};
 
-        while (pax_display_poll_message(display, &message) != 0) {
+        while (pax_display_poll_message(display, &message) != 0 && active != 0) {
             switch (message.kind) {
                 case PAX_DISPLAY_MESSAGE_KIND_DISPLAY_DESTROY:
                     active = 0;
                 break;
+
+                case PAX_DISPLAY_MESSAGE_KIND_DISPLAY_RECT: {
+                    Pax_Display_Message_Display_Rect rect = message.display_rect;
+
+                    printf("Display_Size {l = %lli, t = %lli, w = %lli, h = %lli}\n",
+                        rect.left, rect.top, rect.width, rect.height);
+                } break;
 
                 case PAX_DISPLAY_MESSAGE_KIND_KEYBOARD_BUTTON: {
                     Pax_Display_Message_Keyboard_Button button = message.keyboard_button;
@@ -72,20 +78,6 @@ main(int argc, char** argv)
 
                         default: break;
                     }
-                } break;
-
-                case PAX_DISPLAY_MESSAGE_KIND_DISPLAY_SIZE: {
-                    Pax_Display_Message_Display_Size size = message.display_size;
-
-                    printf("Display_Size {x = %lli, y = %lli}\n", size.width, size.height);
-
-                    pax_display_clear(display);
-                } break;
-
-                case PAX_DISPLAY_MESSAGE_KIND_DISPLAY_COORDS: {
-                    Pax_Display_Message_Display_Coords size = message.display_coords;
-
-                    printf("Display_Coords {x = %lli, y = %lli}\n", size.x, size.y);
                 } break;
 
                 default: break;

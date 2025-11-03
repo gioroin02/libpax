@@ -9,7 +9,7 @@ typedef struct Pax_Win32_Display_Buffer Pax_Win32_Display_Buffer;
 /* Display */
 
 Pax_Win32_Display*
-pax_win32_display_create(Pax_Arena* arena, Pax_String8 name, Pax_Display_Message_Queue queue);
+pax_win32_display_create(Pax_Arena* arena, Pax_String8 name);
 
 void
 pax_win32_display_destroy(Pax_Win32_Display* self);

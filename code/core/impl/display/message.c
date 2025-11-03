@@ -12,27 +12,16 @@ pax_display_message_display_destroy()
 }
 
 Pax_Display_Message
-pax_display_message_display_size(paxiword width, paxiword height)
+pax_display_message_display_rect(paxiword left, paxiword top, paxiword width, paxiword height)
 {
     return (Pax_Display_Message) {
-        .kind = PAX_DISPLAY_MESSAGE_KIND_DISPLAY_SIZE,
+        .kind = PAX_DISPLAY_MESSAGE_KIND_DISPLAY_RECT,
 
-        .display_size = {
+        .display_rect = {
+            .left   = left,
+            .top    = top,
             .width  = width,
             .height = height,
-        },
-    };
-}
-
-Pax_Display_Message
-pax_display_message_display_coords(paxiword x, paxiword y)
-{
-    return (Pax_Display_Message) {
-        .kind = PAX_DISPLAY_MESSAGE_KIND_DISPLAY_COORDS,
-
-        .display_coords = {
-            .x = x,
-            .y = y,
         },
     };
 }
