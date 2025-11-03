@@ -9,7 +9,7 @@ int
 main(int argc, char** argv)
 {
     Pax_Arena arena = pax_memory_reserve(32);
-    Pax_Arena video = pax_memory_reserve(512);
+    Pax_Arena video = pax_memory_reserve(4096);
 
     Pax_Display display = pax_display_create(&arena, pax_str8("Prova"));
 
@@ -18,8 +18,8 @@ main(int argc, char** argv)
     printf("DISPLAY CREATED\n");
 
     Pax_Display_Buffer buffer_array[2] = {
-        pax_display_buffer_create(display, &video, 400, 400),
-        pax_display_buffer_create(display, &video, 400, 400),
+        pax_display_buffer_create(display, &video, 800, 600),
+        pax_display_buffer_create(display, &video, 800, 600),
     };
 
     if (buffer_array[0] == 0) return 1;
@@ -36,6 +36,9 @@ main(int argc, char** argv)
     srand(time(0));
 
     pax_display_set_visibility(display, PAX_DISPLAY_VISIBILITY_SHOW);
+
+    paxiword offset_x = 0;
+    paxiword offset_y = 0;
 
     while (active != 0) {
         Pax_Display_Message message = {0};
@@ -90,23 +93,15 @@ main(int argc, char** argv)
         paxiword height = pax_display_buffer_height(buffer);
 
         for (paxiword y = 0; y < height; y += 1) {
-            for (paxiword x = 0; x < width; x += 1) {
-                paxu8 r = 96 + rand() % 64;
-                paxu8 g = 96 + rand() % 64;
-                paxu8 b = 96 + rand() % 64;
-
-                pax_display_buffer_write(
-                    buffer, x, y, r, g, b);
-            }
+            for (paxiword x = 0; x < width; x += 1)
+                pax_display_buffer_write(buffer, x, y, x + offset_x, y + offset_y, 0);
         }
 
         pax_display_flush(display, buffer);
 
         buffer_index = (buffer_index + 1) % 2;
+
+        offset_x += 1;
+        offset_y += 1;
     }
-
-    for (paxiword i = 0; i < 2; i += 1)
-        pax_display_buffer_destroy(buffer_array[i]);
-
-    pax_display_destroy(display);
 }

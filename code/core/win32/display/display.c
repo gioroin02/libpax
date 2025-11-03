@@ -15,9 +15,8 @@
 
 struct Pax_Win32_Display
 {
-    Pax_Win32_Display_Buffer* buffer;
-
     Pax_Display_Message_Filter filter;
+    Pax_Win32_Display_Buffer*  buffer;
 
     HWND      handle;
     HINSTANCE instance;

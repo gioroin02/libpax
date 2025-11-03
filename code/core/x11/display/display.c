@@ -13,7 +13,8 @@
 
 struct Pax_X11_Display
 {
-    Pax_X11_Display_Buffer* buffer;
+    Pax_Display_Message_Filter filter;
+    Pax_X11_Display_Buffer*    buffer;
 
     Display *connection;
     Window   window;
@@ -21,13 +22,16 @@ struct Pax_X11_Display
 
     Atom wm_delete_window;
 
+    paxiword left;
+    paxiword top;
     paxiword width;
     paxiword height;
 };
 
 struct Pax_X11_Display_Buffer
 {
-    XImage*  image;
+    XImage* image;
+
     paxu8*   memory;
     paxiword width;
     paxiword height;
@@ -38,59 +42,32 @@ static Pax_Keyboard_Button
 pax_x11_map_keyboard_button(KeySym value)
 {
     switch (value) {
-        case XK_a: return PAX_KEYBOARD_BUTTON_A;
-        case XK_b: return PAX_KEYBOARD_BUTTON_B;
-        case XK_c: return PAX_KEYBOARD_BUTTON_C;
-        case XK_d: return PAX_KEYBOARD_BUTTON_D;
-        case XK_e: return PAX_KEYBOARD_BUTTON_E;
-        case XK_f: return PAX_KEYBOARD_BUTTON_F;
-        case XK_g: return PAX_KEYBOARD_BUTTON_G;
-        case XK_h: return PAX_KEYBOARD_BUTTON_H;
-        case XK_i: return PAX_KEYBOARD_BUTTON_I;
-        case XK_j: return PAX_KEYBOARD_BUTTON_J;
-        case XK_k: return PAX_KEYBOARD_BUTTON_K;
-        case XK_l: return PAX_KEYBOARD_BUTTON_L;
-        case XK_m: return PAX_KEYBOARD_BUTTON_M;
-        case XK_n: return PAX_KEYBOARD_BUTTON_N;
-        case XK_o: return PAX_KEYBOARD_BUTTON_O;
-        case XK_p: return PAX_KEYBOARD_BUTTON_P;
-        case XK_q: return PAX_KEYBOARD_BUTTON_Q;
-        case XK_r: return PAX_KEYBOARD_BUTTON_R;
-        case XK_s: return PAX_KEYBOARD_BUTTON_S;
-        case XK_t: return PAX_KEYBOARD_BUTTON_T;
-        case XK_u: return PAX_KEYBOARD_BUTTON_U;
-        case XK_v: return PAX_KEYBOARD_BUTTON_V;
-        case XK_w: return PAX_KEYBOARD_BUTTON_W;
-        case XK_x: return PAX_KEYBOARD_BUTTON_X;
-        case XK_y: return PAX_KEYBOARD_BUTTON_Y;
-        case XK_z: return PAX_KEYBOARD_BUTTON_Z;
-
-        case XK_A: return PAX_KEYBOARD_BUTTON_A;
-        case XK_B: return PAX_KEYBOARD_BUTTON_B;
-        case XK_C: return PAX_KEYBOARD_BUTTON_C;
-        case XK_D: return PAX_KEYBOARD_BUTTON_D;
-        case XK_E: return PAX_KEYBOARD_BUTTON_E;
-        case XK_F: return PAX_KEYBOARD_BUTTON_F;
-        case XK_G: return PAX_KEYBOARD_BUTTON_G;
-        case XK_H: return PAX_KEYBOARD_BUTTON_H;
-        case XK_I: return PAX_KEYBOARD_BUTTON_I;
-        case XK_J: return PAX_KEYBOARD_BUTTON_J;
-        case XK_K: return PAX_KEYBOARD_BUTTON_K;
-        case XK_L: return PAX_KEYBOARD_BUTTON_L;
-        case XK_M: return PAX_KEYBOARD_BUTTON_M;
-        case XK_N: return PAX_KEYBOARD_BUTTON_N;
-        case XK_O: return PAX_KEYBOARD_BUTTON_O;
-        case XK_P: return PAX_KEYBOARD_BUTTON_P;
-        case XK_Q: return PAX_KEYBOARD_BUTTON_Q;
-        case XK_R: return PAX_KEYBOARD_BUTTON_R;
-        case XK_S: return PAX_KEYBOARD_BUTTON_S;
-        case XK_T: return PAX_KEYBOARD_BUTTON_T;
-        case XK_U: return PAX_KEYBOARD_BUTTON_U;
-        case XK_V: return PAX_KEYBOARD_BUTTON_V;
-        case XK_W: return PAX_KEYBOARD_BUTTON_W;
-        case XK_X: return PAX_KEYBOARD_BUTTON_X;
-        case XK_Y: return PAX_KEYBOARD_BUTTON_Y;
-        case XK_Z: return PAX_KEYBOARD_BUTTON_Z;
+        case XK_a: case XK_A: return PAX_KEYBOARD_BUTTON_A;
+        case XK_b: case XK_B: return PAX_KEYBOARD_BUTTON_B;
+        case XK_c: case XK_C: return PAX_KEYBOARD_BUTTON_C;
+        case XK_d: case XK_D: return PAX_KEYBOARD_BUTTON_D;
+        case XK_e: case XK_E: return PAX_KEYBOARD_BUTTON_E;
+        case XK_f: case XK_F: return PAX_KEYBOARD_BUTTON_F;
+        case XK_g: case XK_G: return PAX_KEYBOARD_BUTTON_G;
+        case XK_h: case XK_H: return PAX_KEYBOARD_BUTTON_H;
+        case XK_i: case XK_I: return PAX_KEYBOARD_BUTTON_I;
+        case XK_j: case XK_J: return PAX_KEYBOARD_BUTTON_J;
+        case XK_k: case XK_K: return PAX_KEYBOARD_BUTTON_K;
+        case XK_l: case XK_L: return PAX_KEYBOARD_BUTTON_L;
+        case XK_m: case XK_M: return PAX_KEYBOARD_BUTTON_M;
+        case XK_n: case XK_N: return PAX_KEYBOARD_BUTTON_N;
+        case XK_o: case XK_O: return PAX_KEYBOARD_BUTTON_O;
+        case XK_p: case XK_P: return PAX_KEYBOARD_BUTTON_P;
+        case XK_q: case XK_Q: return PAX_KEYBOARD_BUTTON_Q;
+        case XK_r: case XK_R: return PAX_KEYBOARD_BUTTON_R;
+        case XK_s: case XK_S: return PAX_KEYBOARD_BUTTON_S;
+        case XK_t: case XK_T: return PAX_KEYBOARD_BUTTON_T;
+        case XK_u: case XK_U: return PAX_KEYBOARD_BUTTON_U;
+        case XK_v: case XK_V: return PAX_KEYBOARD_BUTTON_V;
+        case XK_w: case XK_W: return PAX_KEYBOARD_BUTTON_W;
+        case XK_x: case XK_X: return PAX_KEYBOARD_BUTTON_X;
+        case XK_y: case XK_Y: return PAX_KEYBOARD_BUTTON_Y;
+        case XK_z: case XK_Z: return PAX_KEYBOARD_BUTTON_Z;
 
         case XK_0: return PAX_KEYBOARD_BUTTON_ZERO;
         case XK_1: return PAX_KEYBOARD_BUTTON_ONE;
@@ -210,7 +187,9 @@ pax_x11_display_destroy(Pax_X11_Display* self)
 {
     if (self == 0) return;
 
-    XDestroyWindow(self->connection, self->window);
+    XDestroyWindow(self->connection,
+        self->window);
+
     XCloseDisplay(self->connection);
 
     self->connection = 0;
@@ -241,9 +220,8 @@ pax_x11_display_flush(Pax_X11_Display* self, Pax_X11_Display_Buffer* buffer)
 paxb8
 pax_x11_display_poll_message(Pax_X11_Display* self, Pax_Display_Message* value)
 {
-    Pax_Display_Message temp  = {0};
-    XEvent              event = {0};
-    paxb8               valid = 0;
+    Pax_Display_Message message = {0};
+    XEvent              event   = {0};
 
     while (XPending(self->connection) > 0) {
         XNextEvent(self->connection, &event);
@@ -254,10 +232,8 @@ pax_x11_display_poll_message(Pax_X11_Display* self, Pax_Display_Message* value)
             case ClientMessage: {
                 long item = event.xclient.data.l[0];
 
-                if (item == pax_as(long, self->wm_delete_window)) {
-                    temp  = pax_display_message_display_destroy();
-                    valid = 1;
-                }
+                if (item == pax_as(long, self->wm_delete_window))
+                    message = pax_display_message_display_destroy();
             } break;
 
             case ConfigureNotify: {
@@ -273,8 +249,7 @@ pax_x11_display_poll_message(Pax_X11_Display* self, Pax_Display_Message* value)
                 paxb8               active = (event.type == KeyPress) ? 1 : 0;
                 paxiword            code   = event.xkey.keycode;
 
-                temp  = pax_display_message_keyboard_button(button, active, code);
-                valid = 1;
+                message = pax_display_message_keyboard_button(button, active, code);
             } break;
 
             case ButtonPress:
@@ -290,18 +265,16 @@ pax_x11_display_poll_message(Pax_X11_Display* self, Pax_Display_Message* value)
                     default: break;
                 }
 
-                if (button != PAX_MOUSE_BUTTON_NONE) {
-                    temp  = pax_display_message_mouse_button(button, active);
-                    valid = 1;
-                }
+                if (button != PAX_MOUSE_BUTTON_NONE)
+                    message = pax_display_message_mouse_button(button, active);
             } break;
 
             default: break;
         }
 
-        if (valid != 0) {
+        if (message.kind != PAX_DISPLAY_MESSAGE_KIND_NONE) {
             if (value != 0)
-                *value = temp;
+                *value = message;
 
             return 1;
         }
@@ -322,6 +295,8 @@ pax_x11_display_set_message_filter(Pax_X11_Display* self, Pax_Display_Message_Fi
         mask |= ButtonPressMask | ButtonReleaseMask;
 
     XSelectInput(self->connection, self->window, mask);
+
+    self.filter = filter;
 }
 
 paxb8
