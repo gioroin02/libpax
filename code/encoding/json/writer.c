@@ -200,7 +200,8 @@ pax_json_writer_message(Pax_JSON_Writer* self, Pax_Arena* arena, Pax_JSON_Messag
         } break;
 
         case PAX_JSON_MESSAGE_KIND_DELEGATE: {
-            Pax_JSON_Writer_Proc* proc = pax_as(Pax_JSON_Writer_Proc*, message.delegate.proc);
+            Pax_JSON_Writer_Proc* proc =
+                pax_as(Pax_JSON_Writer_Proc*, message.delegate.proc);
 
             if ((self->flags & PAX_JSON_WRITER_COMMA) != 0)
                 pax_target_write_byte(self->target, PAX_ASCII_COMMA);
@@ -225,14 +226,22 @@ pax_json_writer_message(Pax_JSON_Writer* self, Pax_Arena* arena, Pax_JSON_Messag
 }
 
 paxiword
-pax_json_writer_many(Pax_JSON_Writer* self, Pax_Arena* arena, Pax_JSON_Message* values, paxiword length)
+pax_json_writer_object(Pax_JSON_Writer* self, Pax_Arena* arena, Pax_JSON_Message* values, paxiword length)
 {
+    paxiword size = 0;
+
+    pax_json_writer_message(self, arena,
+        pax_json_message_object_open());
+
     for (paxiword i = 0; i < length; i += 1) {
-        if (pax_json_writer_message(self, arena, values[i]) == 0)
-            return i;
+        if (pax_json_writer_message(self, arena, values[i]) != 0)
+            size += 1;
     }
 
-    return length;
+    pax_json_writer_message(self, arena,
+        pax_json_message_object_close());
+
+    return size;
 }
 
 paxb8
@@ -241,22 +250,23 @@ pax_json_writer_object_open(Pax_JSON_Writer* self, Pax_Arena* arena)
     return pax_json_writer_message(self, arena, pax_json_message_object_open());
 }
 
-paxb8
-pax_json_writer_object_close(Pax_JSON_Writer* self, Pax_Arena* arena)
+paxiword
+pax_json_writer_array(Pax_JSON_Writer* self, Pax_Arena* arena, Pax_JSON_Message* values, paxiword length)
 {
-    return pax_json_writer_message(self, arena, pax_json_message_object_close());
-}
+    paxiword size = 0;
 
-paxb8
-pax_json_writer_array_open(Pax_JSON_Writer* self, Pax_Arena* arena)
-{
-    return pax_json_writer_message(self, arena, pax_json_message_array_open());
-}
+    pax_json_writer_message(self, arena,
+        pax_json_message_array_open());
 
-paxb8
-pax_json_writer_array_close(Pax_JSON_Writer* self, Pax_Arena* arena)
-{
-    return pax_json_writer_message(self, arena, pax_json_message_array_close());
+    for (paxiword i = 0; i < length; i += 1) {
+        if (pax_json_writer_message(self, arena, values[i]) != 0)
+            size += 1;
+    }
+
+    pax_json_writer_message(self, arena,
+        pax_json_message_array_close());
+
+    return size;
 }
 
 #endif // PAX_ENCODING_JSON_WRITER_C

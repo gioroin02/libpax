@@ -24,7 +24,7 @@ typedef struct Pax_JSON_Reader
 }
 Pax_JSON_Reader;
 
-typedef void (Pax_JSON_Reader_Proc) (void*, Pax_JSON_Message, Pax_JSON_Reader*, Pax_Arena*);
+typedef paxb8 (Pax_JSON_Reader_Proc) (void*, Pax_JSON_Reader*, Pax_Arena*);
 
 Pax_JSON_Reader
 pax_json_reader_create(Pax_Arena* arena, paxiword length, Pax_Scanner scanner);
@@ -33,9 +33,12 @@ Pax_JSON_Message
 pax_json_reader_message(Pax_JSON_Reader* self, Pax_Arena* arena);
 
 paxb8
-pax_json_reader_object(Pax_JSON_Reader* self, Pax_Arena* arena, void* ctxt, void* proc);
+pax_json_reader_record(Pax_JSON_Reader* self, Pax_Arena* arena, paxiword* size, Pax_JSON_Message* values, paxiword length);
 
 paxb8
-pax_json_reader_array(Pax_JSON_Reader* self, Pax_Arena* arena, void* ctxt, void* proc);
+pax_json_reader_union(Pax_JSON_Reader* self, Pax_Arena* arena, paxiword* index, Pax_JSON_Message* values, paxiword length);
+
+paxb8
+pax_json_reader_array(Pax_JSON_Reader* self, Pax_Arena* arena, paxiword* size, Pax_JSON_Message* values, paxiword length);
 
 #endif // PAX_ENCODING_JSON_READER_H

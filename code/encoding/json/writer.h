@@ -28,18 +28,9 @@ paxb8
 pax_json_writer_message(Pax_JSON_Writer* self, Pax_Arena* arena, Pax_JSON_Message message);
 
 paxiword
-pax_json_writer_many(Pax_JSON_Writer* self, Pax_Arena* arena, Pax_JSON_Message* values, paxiword length);
+pax_json_writer_object(Pax_JSON_Writer* self, Pax_Arena* arena, Pax_JSON_Message* values, paxiword length);
 
-paxb8
-pax_json_writer_object_open(Pax_JSON_Writer* self, Pax_Arena* arena);
-
-paxb8
-pax_json_writer_object_close(Pax_JSON_Writer* self, Pax_Arena* arena);
-
-paxb8
-pax_json_writer_array_open(Pax_JSON_Writer* self, Pax_Arena* arena);
-
-paxb8
-pax_json_writer_array_close(Pax_JSON_Writer* self, Pax_Arena* arena);
+paxiword
+pax_json_writer_array(Pax_JSON_Writer* self, Pax_Arena* arena, Pax_JSON_Message* values, paxiword length);
 
 #endif // PAX_ENCODING_JSON_WRITER_H

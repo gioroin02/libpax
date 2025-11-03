@@ -2,6 +2,7 @@
 #define PAX_ENCODING_JSON_READER_C
 
 #include "./reader.h"
+#include "message.h"
 #include "scanner.c"
 
 Pax_JSON_Reader
@@ -182,55 +183,178 @@ pax_json_reader_message(Pax_JSON_Reader* self, Pax_Arena* arena)
         }
     }
 
-    if (result.name.length > 0) self->name = (Pax_String8) {0};
+    if (result.name.length > 0)
+        self->name = (Pax_String8) {0};
 
     return result;
 }
 
 paxb8
-pax_json_reader_object(Pax_JSON_Reader* self, Pax_Arena* arena, void* ctxt, void* proc)
+pax_json_reader_record(Pax_JSON_Reader* self, Pax_Arena* arena, paxiword* size, Pax_JSON_Message* values, paxiword length)
 {
-    if (proc == 0) return 0;
-
     Pax_JSON_Message message = pax_json_reader_message(self, arena);
+    paxiword         temp    = 0;
 
-    if (message.kind != PAX_JSON_MESSAGE_KIND_OBJECT_OPEN)
-        return 0;
+    if (message.kind != PAX_JSON_MESSAGE_KIND_OBJECT_OPEN) return 0;
 
     message = pax_json_reader_message(self, arena);
 
     while (message.kind != PAX_JSON_MESSAGE_KIND_OBJECT_CLOSE) {
         if (message.kind == PAX_JSON_MESSAGE_KIND_END) break;
 
-        if (message.name.length > 0)
-            pax_as(Pax_JSON_Reader_Proc*, proc)(ctxt, message, self, arena);
+        for (paxiword i = 0; i < length; i += 1) {
+            switch (message.kind) {
+                case PAX_JSON_MESSAGE_KIND_NAME: {
+                    if (values[i].kind != PAX_JSON_MESSAGE_KIND_DELEGATE) break;
+
+                    Pax_JSON_Reader_Proc* proc =
+                        pax_as(Pax_JSON_Reader_Proc*, values[i].delegate.proc);
+
+                    if (values[i].delegate.proc == 0) break;
+
+                    if (pax_string8_is_equal(message.name, values[i].name) != 0) {
+                        paxb8 state =
+                            proc(values[i].delegate.ctxt, self, arena);
+
+                        if (state != 0) temp += 1;
+                    }
+                } break;
+
+                case PAX_JSON_MESSAGE_KIND_STRING:
+                case PAX_JSON_MESSAGE_KIND_UNSIGNED:
+                case PAX_JSON_MESSAGE_KIND_INTEGER:
+                case PAX_JSON_MESSAGE_KIND_FLOATING:
+                case PAX_JSON_MESSAGE_KIND_BOOLEAN:
+                case PAX_JSON_MESSAGE_KIND_NULL: {
+                    if (values[i].kind != message.kind) break;
+
+                    if (pax_string8_is_equal(message.name, values[i].name) != 0) {
+                        values[i]  = message;
+                        temp      += 1;
+                    }
+                } break;
+
+                default: break;
+            }
+        }
 
         message = pax_json_reader_message(self, arena);
     }
+
+    if (size != 0) *size = temp;
 
     return 1;
 }
 
 paxb8
-pax_json_reader_array(Pax_JSON_Reader* self, Pax_Arena* arena, void* ctxt, void* proc)
+pax_json_reader_union(Pax_JSON_Reader* self, Pax_Arena* arena, paxiword* index, Pax_JSON_Message* values, paxiword length)
 {
-    if (proc == 0) return 0;
-
     Pax_JSON_Message message = pax_json_reader_message(self, arena);
+    paxiword         temp    = length;
 
-    if (message.kind != PAX_JSON_MESSAGE_KIND_ARRAY_OPEN)
-        return 0;
+    if (message.kind != PAX_JSON_MESSAGE_KIND_OBJECT_OPEN) return 0;
+
+    message = pax_json_reader_message(self, arena);
+
+    while (message.kind != PAX_JSON_MESSAGE_KIND_OBJECT_CLOSE) {
+        if (message.kind == PAX_JSON_MESSAGE_KIND_END) break;
+
+        for (paxiword i = 0; i < length && temp == length; i += 1) {
+            switch (message.kind) {
+                case PAX_JSON_MESSAGE_KIND_NAME: {
+                    if (values[i].kind != PAX_JSON_MESSAGE_KIND_DELEGATE) break;
+
+                    Pax_JSON_Reader_Proc* proc =
+                        pax_as(Pax_JSON_Reader_Proc*, values[i].delegate.proc);
+
+                    if (values[i].delegate.proc == 0) break;
+
+                    if (pax_string8_is_equal(message.name, values[i].name) != 0) {
+                        paxb8 state =
+                            proc(values[i].delegate.ctxt, self, arena);
+
+                        if (state != 0) temp = i;
+                    }
+                } break;
+
+                case PAX_JSON_MESSAGE_KIND_STRING:
+                case PAX_JSON_MESSAGE_KIND_UNSIGNED:
+                case PAX_JSON_MESSAGE_KIND_INTEGER:
+                case PAX_JSON_MESSAGE_KIND_FLOATING:
+                case PAX_JSON_MESSAGE_KIND_BOOLEAN:
+                case PAX_JSON_MESSAGE_KIND_NULL: {
+                    if (values[i].kind != message.kind) break;
+
+                    if (pax_string8_is_equal(message.name, values[i].name) != 0) {
+                        values[i] = message;
+                        temp      = i;
+                    }
+                } break;
+
+                default: break;
+            }
+        }
+
+        message = pax_json_reader_message(self, arena);
+    }
+
+    if (index != 0) *index = temp;
+
+    return 1;
+}
+
+paxb8
+pax_json_reader_array(Pax_JSON_Reader* self, Pax_Arena* arena, paxiword* size, Pax_JSON_Message* values, paxiword length)
+{
+    Pax_JSON_Message message = pax_json_reader_message(self, arena);
+    Pax_JSON_Message sentry  = {0};
+    paxiword         temp    = 0;
+
+    if (length > 0) sentry = values[0];
+
+    if (message.kind != PAX_JSON_MESSAGE_KIND_ARRAY_OPEN) return 0;
 
     message = pax_json_reader_message(self, arena);
 
     while (message.kind != PAX_JSON_MESSAGE_KIND_ARRAY_CLOSE) {
         if (message.kind == PAX_JSON_MESSAGE_KIND_END) break;
 
-        if (message.name.length <= 0)
-           pax_as(Pax_JSON_Reader_Proc*, proc)(ctxt, message, self, arena);
+        if (temp < length) {
+            switch (message.kind) {
+                case PAX_JSON_MESSAGE_KIND_NAME: {
+                    if (sentry.kind != PAX_JSON_MESSAGE_KIND_DELEGATE) break;
+
+                    Pax_JSON_Reader_Proc* proc =
+                        pax_as(Pax_JSON_Reader_Proc*, sentry.delegate.proc);
+
+                    if (sentry.delegate.proc != 0) {
+                        paxb8 state =
+                            proc(sentry.delegate.ctxt, self, arena);
+
+                        if (state != 0) temp += 1;
+                    }
+                } break;
+
+                case PAX_JSON_MESSAGE_KIND_STRING:
+                case PAX_JSON_MESSAGE_KIND_UNSIGNED:
+                case PAX_JSON_MESSAGE_KIND_INTEGER:
+                case PAX_JSON_MESSAGE_KIND_FLOATING:
+                case PAX_JSON_MESSAGE_KIND_BOOLEAN:
+                case PAX_JSON_MESSAGE_KIND_NULL: {
+                    if (sentry.kind == message.kind) {
+                        values[temp]  = message;
+                        temp         += 1;
+                    }
+                } break;
+
+                default: break;
+            }
+        }
 
         message = pax_json_reader_message(self, arena);
     }
+
+    if (size != 0) *size = temp;
 
     return 1;
 }
