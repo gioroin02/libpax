@@ -9,175 +9,272 @@
 #define MAG(x) "\x1b[95m" x "\x1b[0m"
 #define CYA(x) "\x1b[96m" x "\x1b[0m"
 
-typedef Pax_String8 Entity_Tag;
-
-#define ENTITY_TAGS_ITEMS pax_as(paxiword, 16)
-
-typedef struct Entity_Tags
+typedef enum Entity_Kind
 {
-    Entity_Tag items[ENTITY_TAGS_ITEMS];
-    paxiword   size;
+    ENTITY_KIND_NONE,
+    ENTITY_KIND_DECOR,
+    ENTITY_KIND_ITEM,
 }
-Entity_Tags;
+Entity_Kind;
 
-typedef enum Entity_Flag
+#define ENTITY_DECOR_TAGS_ITEMS pax_as(paxiword, 16)
+
+typedef struct Entity_Decor_Tags
 {
-    ENTITY_NONE  = 0,
-    ENTITY_SHOWN = 1 << 0,
-    ENTITY_ALIVE = 1 << 1,
+    Pax_String8 items[ENTITY_DECOR_TAGS_ITEMS];
+    paxiword    size;
 }
-Entity_Flag;
+Entity_Decor_Tags;
+
+typedef struct Entity_Decor
+{
+    paxiword world_x;
+    paxiword world_y;
+
+    Pax_String8 name;
+
+    Entity_Decor_Tags tags;
+}
+Entity_Decor;
+
+typedef enum Entity_Item_Flag
+{
+    ENTITY_ITEM_FLAG_NONE  = 0,
+    ENTITY_ITEM_FLAG_COUNT = 5,
+
+    ENTITY_ITEM_FLAG_SHOWN = 1 << 0,
+    ENTITY_ITEM_FLAG_ALIVE = 1 << 1,
+    ENTITY_ITEM_FLAG_SOLID = 1 << 2,
+    ENTITY_ITEM_FLAG_FLUID = 1 << 3,
+    ENTITY_ITEM_FLAG_FOOD  = 1 << 4,
+}
+Entity_Item_Flag;
+
+typedef struct Entity_Item
+{
+    paxiword    parent;
+    Pax_String8 name;
+
+    Entity_Item_Flag flags;
+}
+Entity_Item;
 
 typedef struct Entity
 {
-    paxuword parent;
+    Entity_Kind kind;
 
-    Pax_String8 name;
-    paxuword    code;
-
-    Entity_Flag flags;
-    Entity_Tags tags;
+    union
+    {
+        Entity_Decor decor;
+        Entity_Item  item;
+    };
 }
 Entity;
 
 void
-indent_show(paxiword level)
+entity_decor_tags_show(Entity_Decor_Tags* self, paxiword level)
 {
-    level = pax_min(level, 1);
+    int indent = (level + 1) * 2;
 
-    for (paxiword i = 0; i <= level; i += 1)
-        printf("%4c", PAX_ASCII_SPACE);
-}
+    printf("(Entity_Decor_Tags) {\n");
 
-void
-entity_flags_show(Entity_Flag* self, paxiword level)
-{
-    static const Pax_String8 names[] = {
-        pax_str8("shown"),
-        pax_str8("alive"),
-    };
+    for (paxiword i = 0; i < self->size; i += 1) {
+        Pax_String8 item = self->items[i];
 
-    printf("(Entity_Flags) {\n");
-
-    for (paxiword i = 0; i < 2; i += 1) {
-        indent_show(level);
-
-        printf("[%s] = %i\n", names[i].memory, *self & (1 << i));
+        printf("%*c", indent, PAX_ASCII_SPACE);
+        printf("[%lli] = '%.*s'\n", i, pax_as(int, item.length),
+            item.memory);
     }
 
-    indent_show(level - 1);
-
+    printf("%*c", pax_as(int, level * 2), PAX_ASCII_SPACE);
     printf("}\n");
 }
 
 void
-entity_tags_show(Entity_Tags* self, paxiword level)
+entity_decor_show(Entity_Decor* self, paxiword level)
 {
-    printf("(Entity_Tags) {\n");
+    int indent = (level + 1) * 2;
 
-    for (paxiword i = 0; i < self->size; i += 1) {
-        indent_show(level);
+    printf("(Entity_Decor) {\n");
 
-        printf("[%lli] = '%s'\n",
-            i, self->items[i].memory);
+    printf("%*c", indent, PAX_ASCII_SPACE);
+    printf(".world_x = %lli\n", self->world_x);
+
+    printf("%*c", indent, PAX_ASCII_SPACE);
+    printf(".world_y = %lli\n", self->world_y);
+
+    printf("%*c", indent, PAX_ASCII_SPACE);
+    printf(".name = '%.*s'\n", pax_as(int, self->name.length),
+        self->name.memory);
+
+    printf("%*c", indent, PAX_ASCII_SPACE);
+    printf(".tags = ");
+
+    entity_decor_tags_show(&self->tags, level + 1);
+
+    printf("%*c", pax_as(int, level * 2), PAX_ASCII_SPACE);
+    printf("}\n");
+}
+
+void
+entity_item_flag_show(Entity_Item_Flag* self, paxiword level)
+{
+    int indent = (level + 1) * 2;
+
+    Pax_String8 names[] = {
+        pax_str8("SHOWN"),
+        pax_str8("ALIVE"),
+        pax_str8("SOLID"),
+        pax_str8("FLUID"),
+        pax_str8("FOOD"),
+    };
+
+    printf("(Entity_Item_Flag) {\n");
+
+    for (paxiword i = 0; i < ENTITY_ITEM_FLAG_COUNT; i += 1) {
+        Pax_String8 name = names[i];
+        paxiword    j    = 1 << i;
+
+        if ((*self & j) == 0) continue;
+
+        printf("%*c", indent, PAX_ASCII_SPACE);
+        printf("[%lli] = '%.*s'\n", j, pax_as(int, name.length),
+            name.memory);
     }
 
-    indent_show(level - 1);
+    printf("%*c", pax_as(int, level * 2), PAX_ASCII_SPACE);
+    printf("}\n");
+}
 
+void
+entity_item_show(Entity_Item* self, paxiword level)
+{
+    int indent = (level + 1) * 2;
+
+    printf("(Entity_Item) {\n");
+
+    printf("%*c", indent, PAX_ASCII_SPACE);
+    printf(".parent = %lli\n", self->parent);
+
+    printf("%*c", indent, PAX_ASCII_SPACE);
+    printf(".name = '%.*s'\n", pax_as(int, self->name.length),
+        self->name.memory);
+
+    printf("%*c", indent, PAX_ASCII_SPACE);
+    printf(".flags = ");
+
+    entity_item_flag_show(&self->flags, level + 1);
+
+    printf("%*c", pax_as(int, level * 2), PAX_ASCII_SPACE);
     printf("}\n");
 }
 
 void
 entity_show(Entity* self, paxiword level)
 {
-    printf("(Entity) {\n");
+    switch (self->kind) {
+        case ENTITY_KIND_DECOR:
+            entity_decor_show(&self->decor, level);
+        break;
 
-    indent_show(level);
+        case ENTITY_KIND_ITEM:
+            entity_item_show(&self->item, level);
+        break;
 
-    printf("[.parent] = %llu\n", self->parent);
-
-    indent_show(level);
-
-    printf("[.name] = '%.*s'\n",
-        pax_as(int, self->name.length), self->name.memory);
-
-    indent_show(level);
-
-    printf("[.code] = %llu\n", self->code);
-
-    indent_show(level);
-
-    printf("[.flags] = ");
-
-    entity_flags_show(&self->flags, level + 1);
-
-    indent_show(level);
-
-    printf("[.tags] = ");
-
-    entity_tags_show(&self->tags, level + 1);
-
-    indent_show(level - 1);
-
-    printf("}\n");
+        default: printf("(Entity) {}\n"); break;
+    }
 }
 
 paxb8
-entity_flags_json_write(Entity_Flag* self, Pax_JSON_Writer* writer, Pax_Arena* arena)
+entity_decor_tags_write(Entity_Decor_Tags* self, Pax_JSON_Writer* writer, Pax_Arena* arena)
 {
-    static const Pax_String8 names[] = {
-        pax_str8("shown"),
-        pax_str8("alive"),
-    };
+    Pax_JSON_Message messages[16] = {};
 
-    pax_json_writer_array_open(writer, arena);
+    paxiword size = 0;
 
-    for (paxiword i = 0; i < 2; i += 1) {
-        if ((*self & (1 << i)) == 0) continue;
-
-        pax_json_writer_message(writer, arena,
-            pax_json_message_string(names[i]));
+    for (paxiword i = 0; i < self->size; i += 1) {
+        messages[size++] =
+            pax_json_message_string(self->items[i]);
     }
 
-    pax_json_writer_array_close(writer, arena);
-
-    return 1;
+    return pax_json_writer_array(writer, arena, 0, messages, size);
 }
 
 paxb8
-entity_tags_json_write(Entity_Tags* self, Pax_JSON_Writer* writer, Pax_Arena* arena)
+entity_decor_write(Entity_Decor* self, Pax_JSON_Writer* writer, Pax_Arena* arena)
 {
-    pax_json_writer_array_open(writer, arena);
+    Pax_JSON_Message messages[] = {
+        pax_json_message_pair(pax_str8("world_x"), pax_json_message_unsigned(self->world_x)),
+        pax_json_message_pair(pax_str8("world_y"), pax_json_message_unsigned(self->world_y)),
+        pax_json_message_pair(pax_str8("name"),    pax_json_message_string(self->name)),
 
-    for (paxiword i = 0; i < self->size; i += 1)
-        pax_json_writer_message(writer, arena, pax_json_message_string(self->items[i]));
+        pax_json_message_pair(pax_str8("tags"), pax_json_message_delegate(
+            &self->tags, &entity_decor_tags_write)),
+    };
 
-    pax_json_writer_array_close(writer, arena);
-
-    return 1;
+    return pax_json_writer_record(writer, arena, 0, messages, 4);
 }
 
 paxb8
-entity_json_write(Entity* self, Pax_JSON_Writer* writer, Pax_Arena* arena)
+entity_item_flag_write(Entity_Item_Flag* self, Pax_JSON_Writer* writer, Pax_Arena* arena)
 {
-    pax_json_writer_object_open(writer, arena);
+    Pax_String8 names[] = {
+        pax_str8("shown"),
+        pax_str8("alive"),
+        pax_str8("solid"),
+        pax_str8("fluid"),
+        pax_str8("food"),
+    };
 
-    Pax_JSON_Message parent = pax_json_message_null();
+    Pax_JSON_Message messages[16] = {};
 
-    if (self->parent != 0)
-        parent = pax_json_message_unsigned(self->parent);
+    paxiword size = 0;
 
-    pax_json_writer_many(writer, arena, (Pax_JSON_Message[]) {
-        pax_json_message_pair(pax_str8("parent"), parent),
-        pax_json_message_pair(pax_str8("name"),  pax_json_message_string(self->name)),
-        pax_json_message_pair(pax_str8("code"),  pax_json_message_unsigned(self->code)),
-        pax_json_message_pair(pax_str8("flags"), pax_json_message_delegate(&self->tags, &entity_flags_json_write)),
-        pax_json_message_pair(pax_str8("tags"),  pax_json_message_delegate(&self->tags, &entity_tags_json_write)),
-    }, 5);
+    for (paxiword i = 0; i < ENTITY_ITEM_FLAG_COUNT; i += 1) {
+        paxiword j = 1 << i;
 
-    pax_json_writer_object_close(writer, arena);
+        if ((*self & j) != 0)
+            messages[size++] = pax_json_message_string(names[i]);
+    }
 
-    return 1;
+    return pax_json_writer_array(writer, arena, 0, messages, size);
+}
+
+paxb8
+entity_item_write(Entity_Item* self, Pax_JSON_Writer* writer, Pax_Arena* arena)
+{
+    Pax_JSON_Message messages[] = {
+        pax_json_message_pair(pax_str8("parent"), pax_json_message_unsigned(self->parent)),
+        pax_json_message_pair(pax_str8("name"),   pax_json_message_string(self->name)),
+
+        pax_json_message_pair(pax_str8("flags"), pax_json_message_delegate(
+            &self->flags, &entity_item_flag_write)),
+    };
+
+    return pax_json_writer_record(writer, arena, 0, messages, 3);
+}
+
+paxb8
+entity_write(Entity* self, Pax_JSON_Writer* writer, Pax_Arena* arena)
+{
+    Pax_JSON_Message messages[] = {
+        pax_json_message_pair(pax_str8("decor"),
+            pax_json_message_delegate(&self->decor, &entity_decor_write)),
+
+        pax_json_message_pair(pax_str8("item"),
+            pax_json_message_delegate(&self->item, &entity_item_write)),
+    };
+
+    paxiword index = 0;
+
+    switch (self->kind) {
+        case ENTITY_KIND_DECOR: index = 0; break;
+        case ENTITY_KIND_ITEM:  index = 1; break;
+
+        default: break;
+    }
+
+    return pax_json_writer_union(writer, arena, index, messages, 2);
 }
 
 int
@@ -185,27 +282,44 @@ main(int argc, char** argv)
 {
     Pax_Arena   arena  = pax_memory_reserve(16);
     Pax_Buffer8 buffer = pax_buffer8_create(&arena, 256);
-    Pax_Target* target = pax_target_from_buffer8(&arena, &buffer);
 
-    Pax_JSON_Writer writer = pax_json_writer_create(&arena, 16, target);
+    Entity entity_decor = {
+        .kind = ENTITY_KIND_DECOR,
 
-    Entity entity = {
-        .name  = pax_str8("Charred sword"),
-        .code  = 156,
-        .flags = ENTITY_ALIVE,
-        .tags  = {
-            .items = {
-                pax_str8("element:fire"),
-                pax_str8("damage:slashing"),
-                pax_str8("damage:draconic"),
+        .decor = {
+            .name    = pax_str8("Bush"),
+            .world_x = 156,
+            .world_y = 20,
+
+            .tags = {
+                .items = {
+                    [0] = pax_str8("burn"),
+                    [1] = pax_str8("loot"),
+                },
+                .size = 2,
             },
-            .size = 3
-        }
+        },
     };
 
-    entity_show(&entity, 0);
+    Entity entity_item = {
+        .kind = ENTITY_KIND_ITEM,
 
-    entity_json_write(&entity, &writer, &arena);
+        .item = {
+            .parent = 16,
+            .name   = pax_str8("Bush"),
+
+            .flags = ENTITY_ITEM_FLAG_ALIVE |
+                ENTITY_ITEM_FLAG_SOLID |
+                ENTITY_ITEM_FLAG_FOOD,
+        },
+    };
+
+    Pax_JSON_Writer writer = pax_json_writer_create(&arena, 16,
+        pax_target_from_buffer8(&arena, &buffer));
+
+    entity_show(&entity_item, 0);
+
+    entity_write(&entity_item, &writer, &arena);
 
     printf(YLW("[start]") "\n%.*s\n" YLW("[stop]") "\n",
         pax_as(int, buffer.length), buffer.memory);

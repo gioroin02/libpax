@@ -27,10 +27,13 @@ pax_json_writer_create(Pax_Arena* arena, paxiword length, Pax_Target* target);
 paxb8
 pax_json_writer_message(Pax_JSON_Writer* self, Pax_Arena* arena, Pax_JSON_Message message);
 
-paxiword
-pax_json_writer_object(Pax_JSON_Writer* self, Pax_Arena* arena, Pax_JSON_Message* values, paxiword length);
+paxb8
+pax_json_writer_record(Pax_JSON_Writer* self, Pax_Arena* arena, paxiword* size, Pax_JSON_Message* values, paxiword length);
 
-paxiword
-pax_json_writer_array(Pax_JSON_Writer* self, Pax_Arena* arena, Pax_JSON_Message* values, paxiword length);
+paxb8
+pax_json_writer_union(Pax_JSON_Writer* self, Pax_Arena* arena, paxiword index, Pax_JSON_Message* values, paxiword length);
+
+paxb8
+pax_json_writer_array(Pax_JSON_Writer* self, Pax_Arena* arena, paxiword* size, Pax_JSON_Message* values, paxiword length);
 
 #endif // PAX_ENCODING_JSON_WRITER_H
